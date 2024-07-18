@@ -13,6 +13,7 @@ A simple Spring boot application that demonstrates the usage of RESTful API usin
 * intellij idea
 * Lombok
 * org.postgresql.Driver
+* Postman
 
 ## Steps to install
 
