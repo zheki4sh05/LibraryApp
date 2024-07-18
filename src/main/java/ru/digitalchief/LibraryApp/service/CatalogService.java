@@ -18,7 +18,6 @@ public class CatalogService {
     private CatalogRepository catalogRepository;
     public void save(CatalogDto catalogDto)throws NotUniqueIsbnException {
 
-       // catalogDao.save(mapToEntity(catalogDto));
 
        Optional<Catalog> currentCatalog =  catalogRepository.getByUsbn(catalogDto.getId());
 
