@@ -17,8 +17,6 @@ public class CatalogService {
     @Autowired
     private CatalogRepository catalogRepository;
     public void save(CatalogDto catalogDto)throws NotUniqueIsbnException {
-
-
        Optional<Catalog> currentCatalog =  catalogRepository.getByUsbn(catalogDto.getId());
 
        if(currentCatalog.isEmpty()){

@@ -10,7 +10,7 @@ A simple Spring boot application that demonstrates the usage of RESTful API usin
 * JPA
 * Hibernate
 * Maven
-* Eclipse Oxygen
+* intellij ide
 
 ## Steps to install
 
