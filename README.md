@@ -1,4 +1,4 @@
-# Spring boot, Hibernate, MySQL REST API
+# Spring boot, Hibernate, PostgresSQL REST API
 
 A simple Spring boot application that demonstrates the usage of RESTful API using Spring boot, Hibernate and PostgreSQL. 
 
