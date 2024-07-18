@@ -13,7 +13,7 @@ import java.time.*;
 public class Book {
 
     @Column(name = "number")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer id;
 

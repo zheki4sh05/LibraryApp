@@ -60,7 +60,7 @@ public class BookService {
     private Book mapToEntity(BookDto bookDto){
         return new Book(bookDto.getId(),
                 bookDto.getRack(),
-                bookDto.getAccounting(),
+                LocalDate.ofYearDay(Integer.parseInt(bookDto.getAccounting()),1) ,
                 bookDto.getIsTaken()
         );
     }
