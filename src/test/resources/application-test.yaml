@@ -1,0 +1,9 @@
+spring:
+  flyway:
+    enabled: true
+  r2dbc:
+    url: r2dbc:tc:postgresql:///library-test
+    username: postgres
+    password: postgres
+    pool:
+        enabled: false
