@@ -1,11 +1,23 @@
 package com.library.LibraryApp.core.repository;
 
-import com.library.LibraryApp.core.entity.Author;
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
-import org.springframework.stereotype.Repository;
+
+import com.library.LibraryApp.application.dto.SearchAuthorDto;
+import com.library.LibraryApp.core.model.AuthorModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-@Repository
-public interface AuthorRepository extends R2dbcRepository<Author, UUID> {
+
+public interface AuthorRepository {
+    Mono<AuthorModel> save(AuthorModel newAuthor);
+
+    Mono<Long> count();
+
+    Mono<AuthorModel> findById(UUID id);
+
+    Mono<Page<AuthorModel>> fetchAuthors(SearchAuthorDto searchAuthorDto, Pageable pageable);
+
+    Mono<Void> delete(AuthorModel author);
 }

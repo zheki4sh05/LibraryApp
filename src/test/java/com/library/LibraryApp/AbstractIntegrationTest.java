@@ -1,11 +1,15 @@
 package com.library.LibraryApp;
 
-import com.library.LibraryApp.core.repository.*;
-import com.library.LibraryApp.web.dto.*;
+import com.library.LibraryApp.application.dto.AuthorDto;
+import com.library.LibraryApp.application.dto.BookDto;
+import com.library.LibraryApp.application.dto.EditionDto;
+import com.library.LibraryApp.application.dto.StorageDto;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.AuthorR2dbcRepo;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.BookR2dbcRepo;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.EditionR2dbcRepository;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.StorageR2dbcRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +18,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
@@ -31,17 +34,17 @@ public class AbstractIntegrationTest {
     @Autowired
     CatalogRepository catalogRepository;
     @Autowired
-    protected  BookRepository bookRepository;
+    protected BookR2dbcRepo bookR2dbcRepo;
 
 
     @Autowired
-    public AuthorRepository authorRepository;
+    public AuthorR2dbcRepo authorR2DbcRepo;
 
     @Autowired
-    public EditionRepository editionRepository;
+    public EditionR2dbcRepository editionRepository;
 
     @Autowired
-    public StorageRepository storageRepository;
+    public StorageR2dbcRepository storageRepository;
 
 
     @Autowired

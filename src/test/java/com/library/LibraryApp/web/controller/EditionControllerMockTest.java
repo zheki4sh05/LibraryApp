@@ -1,16 +1,14 @@
 package com.library.LibraryApp.web.controller;
 
-import com.library.LibraryApp.core.entity.*;
-import com.library.LibraryApp.core.repository.*;
+import com.library.LibraryApp.application.dto.EditionDto;
+import com.library.LibraryApp.application.entity.EditionEntity;
 import com.library.LibraryApp.core.service.impl.*;
-import com.library.LibraryApp.web.dto.*;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.EditionR2dbcRepository;
 import com.library.LibraryApp.web.mapper.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.autoconfigure.web.reactive.*;
 import org.springframework.boot.test.mock.mockito.*;
-import org.springframework.context.annotation.*;
-import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.test.web.reactive.server.*;
 import reactor.core.publisher.*;
@@ -30,7 +28,7 @@ class EditionControllerMockTest {
     BookEditionService editionService;
 
     @MockBean
-    EditionRepository editionRepository;
+    EditionR2dbcRepository editionRepository;
 
     @MockBean
     EditionMapper editionMapper;
@@ -46,7 +44,7 @@ class EditionControllerMockTest {
                 "f47ac10b-58cc-4372-a567-0e02b2c3d479"
         );
 
-        when(editionService.create(any())).thenReturn(Mono.just(new Edition()));
+        when(editionService.create(any())).thenReturn(Mono.just(new EditionEntity()));
         when(editionMapper.toDto(any())).thenReturn((new EditionDto("", "",1, LocalDate.now(), 1, UUID.randomUUID().toString())));
 
         webTestClient.post()
@@ -98,7 +96,7 @@ class EditionControllerMockTest {
     @Test
     void getEditionById_WhenValidUuid_ReturnsOk() {
         String validId = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
-        when(editionService.findById(validId)).thenReturn(Mono.just(new Edition()));
+        when(editionService.findById(validId)).thenReturn(Mono.just(new EditionEntity()));
         when(editionMapper.toDto(any())).thenReturn((new EditionDto("", "",1, LocalDate.now(), 1, UUID.randomUUID().toString())));
         webTestClient.get()
                 .uri("/edition/" + validId)
@@ -166,7 +164,7 @@ class EditionControllerMockTest {
                 "f47ac10b-58cc-4372-a567-0e02b2c3d479"
         );
 
-        when(editionService.update(any())).thenReturn(Mono.just(new Edition()));
+        when(editionService.update(any())).thenReturn(Mono.just(new EditionEntity()));
         when(editionMapper.toDto(any())).thenReturn((new EditionDto("", "",1, LocalDate.now(), 1, UUID.randomUUID().toString())));
         webTestClient.put()
                 .uri("/edition")

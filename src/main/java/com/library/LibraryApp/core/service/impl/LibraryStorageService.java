@@ -1,12 +1,15 @@
 package com.library.LibraryApp.core.service.impl;
 
-import com.library.LibraryApp.core.entity.Storage;
+import com.library.LibraryApp.application.entity.StorageEntity;
+import com.library.LibraryApp.core.model.StorageModel;
 import com.library.LibraryApp.core.repository.EditionRepository;
-import com.library.LibraryApp.core.repository.FetchQueries;
 import com.library.LibraryApp.core.repository.StorageRepository;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.EditionR2dbcRepository;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.FetchQueries;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.StorageR2dbcRepository;
 import com.library.LibraryApp.core.service.StorageService;
 import com.library.LibraryApp.core.util.SqlQueryFactoryUtil;
-import com.library.LibraryApp.web.dto.SearchStorageDto;
+import com.library.LibraryApp.application.dto.SearchStorageDto;
 import com.library.LibraryApp.web.exceptions.BadRequestException;
 import com.library.LibraryApp.web.exceptions.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -25,50 +28,51 @@ public class LibraryStorageService implements StorageService {
 
     private final StorageRepository storageRepository;
     private final EditionRepository editionRepository;
-    private final FetchQueries fetchQueries;
+
 
     @Override
-    public Mono<Storage> create(Storage storage) {
+    public Mono<StorageModel> create(StorageModel storage) {
 
         return editionRepository.findById(storage.getEdition())
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти выпуск по id" + storage.getEdition())))
-                .flatMap(book -> storageRepository.save(storage));
+                .flatMap(editionModel -> storageRepository.save(storage));
     }
 
 
 
     @Override
-    public Mono<String> deleteById(String id) {
-        return storageRepository.findById(UUID.fromString(id))
+    public Mono<UUID> deleteById(UUID id) {
+        return storageRepository.findById(id)
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти расположение по id "+id)))
                 .map(storageRepository::delete)
                 .thenReturn(id);
     }
 
     @Override
-    public Mono<Storage> update(Storage entity) {
+    public Mono<StorageModel> update(StorageModel entity) {
         return storageRepository.save(entity);
     }
 
     @Override
-    public Mono<Page<Storage>> fetch(SearchStorageDto searchStorageDto, Pageable pageable) {
-        if(searchStorageDto.dateTo().isBefore(searchStorageDto.dateFrom())){
-            throw new BadRequestException();
-        }
-        int size = pageable.getPageSize();
-        int offset = SqlQueryFactoryUtil.calcOffset(pageable.getPageNumber(), size);
-        String sql = SqlQueryFactoryUtil.createStorageQuery();
-        Flux<Storage> storageFlux = fetchQueries.fetchStorages(sql, searchStorageDto, size, offset);
-        return storageFlux.collectList()
-                .zipWith(storageRepository.count())
-                .map(tuple->
-                     new PageImpl<>(tuple.getT1(), pageable, tuple.getT2())
-                );
+    public Mono<Page<StorageModel>> fetch(SearchStorageDto searchStorageDto, Pageable pageable) {
+        return storageRepository.fetchStorages(searchStorageDto, pageable);
+//        if(searchStorageDto.dateTo().isBefore(searchStorageDto.dateFrom())){
+//            throw new BadRequestException();
+//        }
+//        int size = pageable.getPageSize();
+//        int offset = SqlQueryFactoryUtil.calcOffset(pageable.getPageNumber(), size);
+//        String sql = SqlQueryFactoryUtil.createStorageQuery();
+//        Flux<StorageEntity> storageFlux = fetchQueries.fetchStorages(sql, searchStorageDto, size, offset);
+//        return storageFlux.collectList()
+//                .zipWith(storageRepository.count())
+//                .map(tuple->
+//                     new PageImpl<>(tuple.getT1(), pageable, tuple.getT2())
+//                );
     }
 
     @Override
-    public Mono<Page<Storage>> findAllByEdition(String editionId, Pageable pageable) {
-        return storageRepository.findAllByEditionId(UUID.fromString(editionId), pageable)
+    public Mono<Page<StorageModel>> findAllByEdition(UUID editionId, Pageable pageable) {
+        return storageRepository.findAllByEditionId(editionId, pageable)
                 .collectList()
                 .zipWith(storageRepository.count())
                 .map(p -> new PageImpl<>(p.getT1(), pageable, p.getT2()));

@@ -1,14 +1,12 @@
 package com.library.LibraryApp.web.controller;
 
 import com.library.LibraryApp.AbstractIntegrationTest;
-import com.library.LibraryApp.core.entity.Storage;
-import com.library.LibraryApp.web.dto.BookState;
-import com.library.LibraryApp.web.dto.StorageDto;
+import com.library.LibraryApp.application.entity.StorageEntity;
+import com.library.LibraryApp.application.dto.BookState;
+import com.library.LibraryApp.application.dto.StorageDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.r2dbc.core.DatabaseClient;
 import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
@@ -25,8 +23,8 @@ class StorageControllerTest extends AbstractIntegrationTest {
     public void clearAll(){
         storageRepository.deleteAll().subscribe();
         editionRepository.deleteAll().subscribe();
-        bookRepository.deleteAll().subscribe();
-        authorRepository.deleteAll().subscribe();
+        bookR2dbcRepo.deleteAll().subscribe();
+        authorR2DbcRepo.deleteAll().subscribe();
 
     }
 
@@ -59,14 +57,14 @@ class StorageControllerTest extends AbstractIntegrationTest {
     @Test
     public void fetch_with_params_200(){
         var edition = createEdition();
-        List<Storage> storages = List.of(
-                new Storage(null, 5, LocalDate.of(2023, 6, 10), false, UUID.fromString(edition.id())),
-                new Storage(null, 12, LocalDate.of(2024, 2, 15), true, UUID.fromString(edition.id())),
-                new Storage(null, 5, LocalDate.of(2022, 11, 30), false, UUID.fromString(edition.id())),
-                new Storage(null, 3, LocalDate.of(2021, 8, 20), true, UUID.fromString(edition.id())),
-                new Storage(null, 15, LocalDate.of(2020, 5, 5), false, UUID.fromString(edition.id())),
-                new Storage(null, 9, LocalDate.of(2023, 11, 1), true, UUID.fromString(edition.id())),
-                new Storage(null, 6, LocalDate.of(2024, 4, 7), false, UUID.fromString(edition.id()))
+        List<StorageEntity> storages = List.of(
+                new StorageEntity(null, 5, LocalDate.of(2023, 6, 10), false, UUID.fromString(edition.id())),
+                new StorageEntity(null, 12, LocalDate.of(2024, 2, 15), true, UUID.fromString(edition.id())),
+                new StorageEntity(null, 5, LocalDate.of(2022, 11, 30), false, UUID.fromString(edition.id())),
+                new StorageEntity(null, 3, LocalDate.of(2021, 8, 20), true, UUID.fromString(edition.id())),
+                new StorageEntity(null, 15, LocalDate.of(2020, 5, 5), false, UUID.fromString(edition.id())),
+                new StorageEntity(null, 9, LocalDate.of(2023, 11, 1), true, UUID.fromString(edition.id())),
+                new StorageEntity(null, 6, LocalDate.of(2024, 4, 7), false, UUID.fromString(edition.id()))
         );
         storageRepository.saveAll(storages).subscribe();
 
@@ -99,10 +97,10 @@ class StorageControllerTest extends AbstractIntegrationTest {
     @Test
     public void find_by_edition_id_200(){
         var edition = createEdition();
-        List<Storage> storages = List.of(
-                new Storage(null, 5, LocalDate.of(2023, 6, 10), true, UUID.fromString(edition.id())),
-                new Storage(null, 5, LocalDate.of(2024, 2, 15), true, UUID.fromString(edition.id())),
-                new Storage(null, 5, LocalDate.of(2022, 11, 30), true, UUID.fromString(edition.id()))
+        List<StorageEntity> storages = List.of(
+                new StorageEntity(null, 5, LocalDate.of(2023, 6, 10), true, UUID.fromString(edition.id())),
+                new StorageEntity(null, 5, LocalDate.of(2024, 2, 15), true, UUID.fromString(edition.id())),
+                new StorageEntity(null, 5, LocalDate.of(2022, 11, 30), true, UUID.fromString(edition.id()))
         );
 
         storageRepository.saveAll(storages).subscribe();

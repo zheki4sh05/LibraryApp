@@ -1,14 +1,11 @@
 package com.library.LibraryApp.web.controller;
 
+import com.library.LibraryApp.application.mapper.StorageMapper;
 import com.library.LibraryApp.core.service.StorageService;
-import com.library.LibraryApp.core.util.RegexPatterns;
-import com.library.LibraryApp.web.dto.BookState;
-import com.library.LibraryApp.web.dto.SearchStorageDto;
-import com.library.LibraryApp.web.dto.StorageDto;
-import com.library.LibraryApp.web.mapper.StorageMapper;
+import com.library.LibraryApp.application.dto.SearchStorageDto;
+import com.library.LibraryApp.application.dto.StorageDto;
 import com.library.LibraryApp.web.markers.AdvancedInfo;
 import com.library.LibraryApp.web.markers.BasicInfo;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/storage")
@@ -32,30 +29,22 @@ public class StorageController {
             @RequestBody
             @Validated(BasicInfo.class) StorageDto storageDto
     ){
-        return storageService.create(storageMapper.toNewEntity(storageDto)).map(storageMapper::toDto);
+        return storageService.create(storageMapper.toNewModel(storageDto)).map(storageMapper::toDto);
 
     }
 
     @GetMapping
     public Mono<Page<StorageDto>> fetch(
-            @RequestParam(value = "mode") BookState bookState,
-            @RequestParam(value = "from", required = false, defaultValue = "1970-01-01") LocalDate dateFrom,
-            @RequestParam(value = "to", required = false, defaultValue = "") LocalDate dateTo,
-            @RequestParam(value = "rack", required = false, defaultValue = "1") @Min(1) @Max(100) Integer rack,
+            SearchStorageDto searchStorageDto,
             Pageable pageable
             ){
-        if(dateTo==null){
-            dateTo = LocalDate.now();
-        }
-        SearchStorageDto searchStorageDto = new SearchStorageDto
-                ( bookState, dateFrom,dateTo, rack);
         return storageService.fetch(searchStorageDto,pageable).map(page -> page.map(storageMapper::toDto));
 
     }
 
     @GetMapping("/find")
     public Mono<Page<StorageDto>> findAllByEdition(
-            @RequestParam(value = "edition") @Pattern(regexp = RegexPatterns.UUID) String editionId,
+            @RequestParam(value = "edition") @NotNull UUID editionId,
             Pageable pageable
     ){
         return storageService.findAllByEdition(editionId,pageable).map(page -> page.map(storageMapper::toDto));
@@ -63,8 +52,8 @@ public class StorageController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<String> deleteById(
-            @PathVariable("id") @Pattern(regexp = RegexPatterns.UUID) String id
+    public Mono<UUID> deleteById(
+            @PathVariable("id") @NotNull UUID id
     ){
         return storageService.deleteById(id);
 
@@ -75,7 +64,7 @@ public class StorageController {
             @RequestBody
             @Validated(AdvancedInfo.class) StorageDto storageDto
     ){
-        return storageService.update(storageMapper.toEntity(storageDto)).map(storageMapper::toDto);
+        return storageService.update(storageMapper.toModel(storageDto)).map(storageMapper::toDto);
 
     }
 

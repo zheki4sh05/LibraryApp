@@ -1,10 +1,9 @@
 package com.library.LibraryApp.web.controller;
 
 import com.library.LibraryApp.AbstractIntegrationTest;
-import com.library.LibraryApp.core.entity.Edition;
-import com.library.LibraryApp.web.dto.EditionDto;
+import com.library.LibraryApp.application.entity.EditionEntity;
+import com.library.LibraryApp.application.dto.EditionDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
@@ -19,8 +18,8 @@ class EditionControllerTest extends AbstractIntegrationTest {
     @BeforeEach
     public void clearAll(){
         editionRepository.deleteAll().subscribe();
-        bookRepository.deleteAll().subscribe();
-        authorRepository.deleteAll().subscribe();
+        bookR2dbcRepo.deleteAll().subscribe();
+        authorR2DbcRepo.deleteAll().subscribe();
 
     }
 
@@ -93,10 +92,10 @@ class EditionControllerTest extends AbstractIntegrationTest {
         var author = createAuthor();
         var book = createBookDto(author.getId());
 
-        List<Edition> editions = List.of(
-                new Edition( "9780123456789", 250, LocalDate.of(2019, 6, 10), (short) 1, UUID.fromString(book.id())),
-                new Edition( "9791234567890", 320, LocalDate.of(2020, 2, 5), (short) 2, UUID.fromString(book.id())),
-                new Edition( "9782123456789", 400, LocalDate.of(2021, 11, 30), (short) 3, UUID.fromString(book.id()))
+        List<EditionEntity> editions = List.of(
+                new EditionEntity( "9780123456789", 250, LocalDate.of(2019, 6, 10), (short) 1, UUID.fromString(book.id())),
+                new EditionEntity( "9791234567890", 320, LocalDate.of(2020, 2, 5), (short) 2, UUID.fromString(book.id())),
+                new EditionEntity( "9782123456789", 400, LocalDate.of(2021, 11, 30), (short) 3, UUID.fromString(book.id()))
         );
 
         editionRepository.saveAll(editions).subscribe();

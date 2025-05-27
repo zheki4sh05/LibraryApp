@@ -1,8 +1,8 @@
 package com.library.LibraryApp.web.controller;
 
-import com.library.LibraryApp.core.entity.*;
+import com.library.LibraryApp.application.dto.StorageDto;
+import com.library.LibraryApp.application.entity.StorageEntity;
 import com.library.LibraryApp.core.service.impl.*;
-import com.library.LibraryApp.web.dto.*;
 import com.library.LibraryApp.web.mapper.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.*;
@@ -48,7 +48,7 @@ class StorageControllerMockTest {
                 true,
                 "987e6543-e21a-12d3-a456-426614174111"
         );
-        Storage entity = new Storage();
+        StorageEntity entity = new StorageEntity();
         StorageDto responseDto = new StorageDto(
                 "123e4567-e89b-12d3-a456-426614174000",
                 5,
@@ -102,7 +102,7 @@ class StorageControllerMockTest {
     @Test
     void updateStorage_WhenValidAdvancedDto_ReturnsOk() {
         StorageDto requestDto = createValidAdvancedDto();
-        Storage entity = new Storage();
+        StorageEntity entity = new StorageEntity();
         StorageDto responseDto = createValidAdvancedDto();
 
         when(storageMapper.toEntity(requestDto)).thenReturn(entity);
@@ -235,8 +235,8 @@ class StorageControllerMockTest {
                 "f47ac10b-58cc-4372-a567-0e02b2c3d479"
         );
 
-        when(storageMapper.toEntity(any())).thenReturn(new Storage());
-        when(storageService.update(any())).thenReturn(Mono.just(new Storage()));
+        when(storageMapper.toEntity(any())).thenReturn(new StorageEntity());
+        when(storageService.update(any())).thenReturn(Mono.just(new StorageEntity()));
         when(storageMapper.toDto(any())).thenReturn(validDto);
 
         webTestClient.patch()

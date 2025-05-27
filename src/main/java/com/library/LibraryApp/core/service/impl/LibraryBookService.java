@@ -1,14 +1,16 @@
 package com.library.LibraryApp.core.service.impl;
 
-import com.library.LibraryApp.core.util.SqlQueryFactoryUtil;
+import com.library.LibraryApp.core.model.BookModel;
 import com.library.LibraryApp.core.repository.AuthorRepository;
-import com.library.LibraryApp.core.repository.FetchQueries;
-import com.library.LibraryApp.core.service.BookService;
-import com.library.LibraryApp.core.entity.Book;
-import com.library.LibraryApp.web.dto.SearchBookDto;
-import com.library.LibraryApp.web.exceptions.BadRequestException;
-import com.library.LibraryApp.web.exceptions.EntityNotFoundException;
 import com.library.LibraryApp.core.repository.BookRepository;
+import com.library.LibraryApp.core.util.SqlQueryFactoryUtil;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.AuthorR2dbcRepo;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.FetchQueries;
+import com.library.LibraryApp.core.service.BookService;
+import com.library.LibraryApp.application.dto.SearchBookDto;
+import com.library.LibraryApp.web.exceptions.EntityNotFoundException;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.BookR2dbcRepo;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,7 +22,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class LibraryBookService implements BookService {
 
 
@@ -29,7 +31,7 @@ public class LibraryBookService implements BookService {
     private final FetchQueries fetchQueries;
 
 
-    public Mono<Book> save(Book newBook) {
+    public Mono<BookModel> save(BookModel newBook) {
 
       return authorRepository.findById(newBook.getAuthor())
               .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти автора по id "+newBook.getAuthor())))
@@ -37,32 +39,34 @@ public class LibraryBookService implements BookService {
 
     }
     @Override
-    public Mono<Page<Book>> fetch(SearchBookDto searchBookDto, Pageable pageable) {
-        int size = pageable.getPageSize();
-        int offset = SqlQueryFactoryUtil.calcOffset(pageable.getPageNumber(), size);
-        String sql = SqlQueryFactoryUtil.createBookQuery(pageable);
-        Flux<Book> authors = fetchQueries.fetchBooks(sql, searchBookDto, size, offset);
-        return authors.collectList()
-                .zipWith(bookRepository.count())
-                .map(tuple->
-                        new PageImpl<>(tuple.getT1(), pageable, tuple.getT2())
-                );
+    public Mono<Page<BookModel>> fetch(SearchBookDto searchBookDto, Pageable pageable) {
+        return bookRepository.fetchBooks( searchBookDto,  pageable);
+//        int size = pageable.getPageSize();
+//        int offset = SqlQueryFactoryUtil.calcOffset(pageable.getPageNumber(), size);
+//        String sql = SqlQueryFactoryUtil.createBookQuery(pageable);
+//        Flux<BookModel> authors = fetchQueries.fetchBooks(sql, searchBookDto, size, offset);
+//        return authors.collectList()
+//                .zipWith(bookR2dbcRepo.count())
+//                .map(tuple->
+//                        new PageImpl<>(tuple.getT1(), pageable, tuple.getT2())
+//                );
 
     }
 
 
 
 
-    public Mono<Book> update(Book book) {
-       return authorRepository.findById(book.getAuthor())
-               .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти автора по id "+book.getAuthor().toString())))
-               .flatMap(author -> bookRepository.save(book));
+
+    public Mono<BookModel> update(BookModel book) {
+        return authorRepository.findById(book.getAuthor())
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти автора по id "+book.getAuthor().toString())))
+                .flatMap(author -> bookRepository.save(book));
     }
 
-    public Mono<String> delete(String number) {
-        return bookRepository.findByNumber(UUID.fromString(number))
-                .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти книгу по id "+number)))
-                .flatMap(book -> bookRepository.delete(book).thenReturn(number));
+    public Mono<UUID> delete(UUID id) {
+        return bookRepository.findById(id)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти книгу по id " + id)))
+                .flatMap(book -> bookRepository.delete(book).thenReturn(id));
     }
 
 }

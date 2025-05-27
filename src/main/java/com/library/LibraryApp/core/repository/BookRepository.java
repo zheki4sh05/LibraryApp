@@ -1,38 +1,24 @@
 package com.library.LibraryApp.core.repository;
 
 
-import com.library.LibraryApp.core.entity.Book;
-import org.springframework.data.r2dbc.repository.Query;
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
-import org.springframework.data.repository.query.*;
-import org.springframework.stereotype.*;
+import com.library.LibraryApp.application.dto.SearchBookDto;
+import com.library.LibraryApp.application.entity.BookEntity;
+import com.library.LibraryApp.core.model.AuthorModel;
+import com.library.LibraryApp.core.model.BookModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
 
-import java.util.*;
 
-@Repository
-public interface BookRepository extends R2dbcRepository<Book, UUID> {
+public interface BookRepository  {
 
-    @Query("""
-    select * from book where catalog_fk = :catalogId and is_taken=false limit 1
-    """)
-    Mono<Book> findFirstWithFreeBook(@Param("catalogId") Long isbn);
+    Mono<BookModel> save(BookModel newBook);
+    Mono<Page<BookModel>> fetchBooks(SearchBookDto searchBookDto, Pageable pageable);
+    Mono<Void> delete(BookModel book);
 
-    @Query("""
-    select * from book where id = :id
-    """)
-    Mono<Book> findByNumber(@Param("id") UUID id);
-
-    @Query("""
-    select * from book where catalog_fk = :catalogId and is_taken=true
-    """)
-    Flux<Book> findBorrowBook(Long catalogId);
-
-    @Query("""
-    select * from book where catalog_fk = :catalogId and is_taken=false
-    """)
-    Flux<Book> findFreeBooks(Long catalogId);
+    Mono<BookModel> findById(UUID id);
 }
 

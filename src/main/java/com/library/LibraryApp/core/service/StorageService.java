@@ -1,22 +1,29 @@
 package com.library.LibraryApp.core.service;
 
-import com.library.LibraryApp.core.entity.Storage;
-import com.library.LibraryApp.web.dto.SearchStorageDto;
+import com.library.LibraryApp.application.entity.StorageEntity;
+import com.library.LibraryApp.application.dto.SearchStorageDto;
+import com.library.LibraryApp.core.model.StorageModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 public interface StorageService {
 
     @Transactional
-    Mono<Storage> create(Storage storage);
+    Mono<StorageModel> create(StorageModel storage);
 
-    Mono<String> deleteById(String id);
+    @Transactional
+    Mono<UUID> deleteById(UUID id);
 
-    Mono<Storage> update(Storage entity);
+    @Transactional
+    Mono<StorageModel> update(StorageModel entity);
 
-    Mono<Page<Storage>> fetch(SearchStorageDto searchStorageDto, Pageable pageable);
+    @Transactional(readOnly = true)
+    Mono<Page<StorageModel>> fetch(SearchStorageDto searchStorageDto, Pageable pageable);
 
-    Mono<Page<Storage>> findAllByEdition(String editionId, Pageable pageable);
+    @Transactional(readOnly = true)
+    Mono<Page<StorageModel>> findAllByEdition(UUID editionId, Pageable pageable);
 }

@@ -1,6 +1,9 @@
 package com.library.LibraryApp.core.repository;
 
-import com.library.LibraryApp.core.entity.Storage;
+import com.library.LibraryApp.application.dto.SearchStorageDto;
+import com.library.LibraryApp.application.entity.StorageEntity;
+import com.library.LibraryApp.core.model.StorageModel;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
@@ -11,20 +14,18 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-@Repository
-public interface StorageRepository extends R2dbcRepository<Storage, UUID> {
 
-    @Query("""
-            
-            select * from storage where book_id
-            
-            """)
-    Mono<Storage> findByBookId(String id);
+public interface StorageRepository  {
 
+    Flux<StorageModel> findAllByEditionId(@Param("id") UUID uuid, Pageable pageable);
 
-    @Query("""
-            select * from storage s
-            join edition e on s.book_edition_id = :id and e.id = :id
-            """)
-    Flux<Storage> findAllByEditionId(@Param("id") UUID uuid, Pageable pageable);
+    Mono<StorageModel> save(StorageModel storage);
+
+    Mono<StorageModel> findById(UUID id);
+
+    Mono<Void> delete(StorageModel storageModel);
+
+    Mono<Page<StorageModel>> fetchStorages(SearchStorageDto searchStorageDto, Pageable pageable);
+
+    Mono<Long> count();
 }

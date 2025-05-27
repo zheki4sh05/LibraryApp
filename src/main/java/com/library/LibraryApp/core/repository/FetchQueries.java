@@ -1,7 +1,10 @@
 package com.library.LibraryApp.core.repository;
 
-import com.library.LibraryApp.core.entity.*;
-import com.library.LibraryApp.web.dto.*;
+import com.library.LibraryApp.application.dto.*;
+import com.library.LibraryApp.application.entity.AuthorEntity;
+import com.library.LibraryApp.application.entity.BookEntity;
+import com.library.LibraryApp.application.entity.EditionEntity;
+import com.library.LibraryApp.application.entity.StorageEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
@@ -18,7 +21,7 @@ public class FetchQueries {
 
 
 
-    public Flux<Storage> fetchStorages(String sql, SearchStorageDto searchStorageDto, int size, int offset) {
+    public Flux<StorageEntity> fetchStorages(String sql, SearchStorageDto searchStorageDto, int size, int offset) {
         return databaseClient.sql(sql)
                 .bind("mode", !searchStorageDto.mode().equals(BookState.FREE))
                 .bind("rack", searchStorageDto.rack())
@@ -28,7 +31,7 @@ public class FetchQueries {
                 .bind("offset", offset)
                 .fetch()
                 .all()
-                .map((row) -> new Storage(
+                .map((row) -> new StorageEntity(
                         (UUID) row.get("id"),
                         (Integer) row.get("rack"),
                         (LocalDate) row.get("accounting"),
@@ -39,7 +42,7 @@ public class FetchQueries {
     }
 
 
-    public Flux<Author> fetchAuthors(String sql, SearchAuthorDto searchAuthorDto, int size, int offset) {
+    public Flux<AuthorEntity> fetchAuthors(String sql, SearchAuthorDto searchAuthorDto, int size, int offset) {
 
         return databaseClient.sql(sql)
                 .bind("name", searchAuthorDto.name())
@@ -47,7 +50,7 @@ public class FetchQueries {
                 .bind("offset", offset)
                 .fetch()
                 .all()
-                .map((row) -> new Author(
+                .map((row) -> new AuthorEntity(
                                 (UUID) row.get("id"),
                                 (String) row.get("name")
                         )
@@ -56,7 +59,7 @@ public class FetchQueries {
 
     }
 
-    public Flux<Book> fetchBooks(String sql, SearchBookDto searchBookDto, int size, int offset) {
+    public Flux<BookEntity> fetchBooks(String sql, SearchBookDto searchBookDto, int size, int offset) {
         return databaseClient.sql(sql)
                 .bind("name", searchBookDto.name())
                 .bind("udk", searchBookDto.udk())
@@ -66,7 +69,7 @@ public class FetchQueries {
                 .bind("offset", offset)
                 .fetch()
                 .all()
-                .map((row) -> new Book(
+                .map((row) -> new BookEntity(
                                 (UUID) row.get("id"),
                                 (String) row.get("name"),
                         (String) row.get("udk"),
@@ -80,7 +83,7 @@ public class FetchQueries {
 
 
 
-    public Flux<Edition> fetchEdition(String sql, SearchEditionDto searchEditionDto, int size, int offset) {
+    public Flux<EditionEntity> fetchEdition(String sql, SearchEditionDto searchEditionDto, int size, int offset) {
         return databaseClient.sql(sql)
                 .bind("isbn", searchEditionDto.isbn())
                 .bind("number", searchEditionDto.number())
@@ -90,7 +93,7 @@ public class FetchQueries {
                 .bind("offset", offset)
                 .fetch()
                 .all()
-                .map((row) -> new Edition(
+                .map((row) -> new EditionEntity(
                                 (UUID) row.get("id"),
                                 (String) row.get("isbn"),
                                 (Integer) row.get("pages"),

@@ -1,8 +1,8 @@
 package com.library.LibraryApp.web.controller;
 
 import com.library.LibraryApp.AbstractIntegrationTest;
-import com.library.LibraryApp.core.entity.Author;
-import com.library.LibraryApp.web.dto.AuthorDto;
+import com.library.LibraryApp.application.entity.AuthorEntity;
+import com.library.LibraryApp.application.dto.AuthorDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ class AuthorControllerTest extends AbstractIntegrationTest {
 
         @BeforeEach
         void clear_all(){
-            authorRepository.deleteAll().subscribe();
+            authorR2DbcRepo.deleteAll().subscribe();
         }
 
     @Test
@@ -49,12 +49,12 @@ class AuthorControllerTest extends AbstractIntegrationTest {
     @Test
     public void create_author_with_existed_name_409(){
         final String name="автор";
-        Author author = Author
+        AuthorEntity author = AuthorEntity
                 .builder()
                 .name(name)
                 .build();
 
-        authorRepository.save(author).subscribe();
+        authorR2DbcRepo.save(author).subscribe();
 
         AuthorDto createAuthorDto = AuthorDto.builder()
                 .name(name)
@@ -165,7 +165,7 @@ class AuthorControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void update_not_existed_author_404(){
-        var result1 = authorRepository.count();
+        var result1 = authorR2DbcRepo.count();
 
         StepVerifier.create(result1)
                 .assertNext(count->assertEquals(0, count))
@@ -187,7 +187,7 @@ class AuthorControllerTest extends AbstractIntegrationTest {
                 .expectBody(String.class);
 
 
-        var result2 = authorRepository.count();
+        var result2 = authorR2DbcRepo.count();
 
         StepVerifier.create(result2)
                 .assertNext(count->assertEquals(0, count))
@@ -198,10 +198,10 @@ class AuthorControllerTest extends AbstractIntegrationTest {
     public void update_with_not_unique_name_409(){
          String name1 = "author";
 
-        Author author = Author.builder()
+        AuthorEntity author = AuthorEntity.builder()
                 .name(name1)
                 .build();
-        authorRepository.save(author).subscribe();
+        authorR2DbcRepo.save(author).subscribe();
 
         AuthorDto authorDto = AuthorDto.builder()
                 .name("author2")

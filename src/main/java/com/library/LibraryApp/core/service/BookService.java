@@ -1,11 +1,11 @@
 package com.library.LibraryApp.core.service;
 
-import com.library.LibraryApp.core.entity.Book;
-import com.library.LibraryApp.web.dto.*;
+import com.library.LibraryApp.application.dto.SearchBookDto;
+import com.library.LibraryApp.application.entity.BookEntity;
+import com.library.LibraryApp.core.model.BookModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -14,15 +14,15 @@ public interface BookService {
 
 
     @Transactional
-    Mono<Book> update(Book book);
+    Mono<BookModel> update(BookModel book);
 
     @Transactional
-    Mono<String> delete(String id);
+    Mono<UUID> delete(UUID id);
 
     @Transactional
-    Mono<Book> save(Book newBook);
+    Mono<BookModel> save(BookModel newBook);
 
 
     @Transactional(readOnly = true)
-    Mono<Page<Book>> fetch(SearchBookDto searchBookDto, Pageable pageable);
+    Mono<Page<BookModel>> fetch(SearchBookDto searchBookDto, Pageable pageable);
 }

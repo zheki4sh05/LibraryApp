@@ -1,8 +1,8 @@
 package com.library.LibraryApp.web.controller;
 
-import com.library.LibraryApp.core.repository.AuthorRepository;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.AuthorR2dbcRepo;
 import com.library.LibraryApp.core.service.impl.BookAuthorService;
-import com.library.LibraryApp.web.dto.AuthorDto;
+import com.library.LibraryApp.application.dto.AuthorDto;
 import com.library.LibraryApp.web.mapper.AuthorMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class AuthorControllerMockTest {
     BookAuthorService authorService;
 
    @MockBean
-   AuthorRepository authorRepository;
+   AuthorR2dbcRepo authorR2DbcRepo;
 
     @MockBean
     AuthorMapper authorMapper;
