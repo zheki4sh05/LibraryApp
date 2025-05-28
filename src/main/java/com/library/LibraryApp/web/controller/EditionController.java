@@ -45,6 +45,7 @@ public class EditionController {
            @Valid SearchEditionDto searchEditionDto,
         Pageable pageable
     ){
+        log.info(searchEditionDto.toString());
         return editionService.fetch(searchEditionDto, pageable).map(page -> page.map(editionMapper::toDto));
     };
 

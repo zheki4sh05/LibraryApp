@@ -1,18 +1,16 @@
 package com.library.LibraryApp.web.controller;
 
-import com.library.LibraryApp.application.dto.CreateBookDto;
-import com.library.LibraryApp.application.mapper.BookMapper;
-import com.library.LibraryApp.core.service.BookService;
 import com.library.LibraryApp.application.dto.BookDto;
+import com.library.LibraryApp.application.dto.CreateBookDto;
 import com.library.LibraryApp.application.dto.SearchBookDto;
-import com.library.LibraryApp.web.markers.AdvancedInfo;
-import com.library.LibraryApp.web.markers.BasicInfo;
+import com.library.LibraryApp.application.mapper.BookMapper;
+import com.library.LibraryApp.core.model.StorageModel;
+import com.library.LibraryApp.core.service.BookService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -39,9 +37,10 @@ public class BookController {
 
     @GetMapping
     public Mono<Page<BookDto>> fetch(
-            SearchBookDto searchBookDto,
+          @Valid  SearchBookDto searchBookDto,
             Pageable pageable
     ){
+
         return bookService.fetch(searchBookDto,pageable)
                 .map(page -> page.map(bookMapper::toDto));
 
@@ -49,10 +48,8 @@ public class BookController {
 
     @PutMapping("/{id}")
     public Mono<BookDto> update
-            (
-                    @PathVariable UUID id,
-                 @Valid   @RequestBody
-              BookDto book) {
+        (@PathVariable UUID id,
+         @Valid @RequestBody BookDto book) {
           return bookService.update(bookMapper.toModel(book, id)).map(bookMapper::toDto);
     }
 

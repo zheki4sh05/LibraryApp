@@ -22,7 +22,7 @@ public record StorageDto(
     LocalDate accounting,
 
 
-    BookState status,
+    String status,
 
 
     UUID edition

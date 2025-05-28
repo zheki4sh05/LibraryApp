@@ -38,10 +38,10 @@ public class SqlQueryFactoryUtil {
 
         String query = """
             select b.* from book as b
-            join author a on a.id = b.author_id
+            join author as a on a.id = b.author_id
             where (:udk = '' or b.udk = :udk)
-            and (:name = '' or b.name like :name)
-            and (:author = '' or a.name like :author)
+            and (:name = '' or b.name = :name)
+            and (:author = '' or a.name = :author)
             """;
 
         if (!orderByClause.isEmpty()) {

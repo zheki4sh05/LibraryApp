@@ -8,6 +8,7 @@ import com.library.LibraryApp.core.service.BookService;
 import com.library.LibraryApp.application.dto.SearchBookDto;
 import com.library.LibraryApp.web.exceptions.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.*;
@@ -17,12 +18,13 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class LibraryBookService implements BookService {
 
 
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
-    private final FetchQueries fetchQueries;
+
 
 
     public Mono<BookModel> save(BookModel newBook) {
@@ -34,14 +36,9 @@ public class LibraryBookService implements BookService {
     }
     @Override
     public Mono<Page<BookModel>> fetch(SearchBookDto searchBookDto, Pageable pageable) {
+        log.info(searchBookDto.toString());
         return bookRepository.fetchBooks( searchBookDto,  pageable);
-
-
     }
-
-
-
-
 
     public Mono<BookModel> update(BookModel book) {
         return authorRepository.findById(book.getAuthor())

@@ -15,6 +15,7 @@ public interface StorageMapper {
 
 
 
+    @Mapping(target = "status", expression = "java(entity.getStatus().name())")
     StorageDto toDto(StorageModel entity);
 
     @Mapping(target = "id", ignore = true)

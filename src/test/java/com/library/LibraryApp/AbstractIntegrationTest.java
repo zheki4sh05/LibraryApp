@@ -155,7 +155,7 @@ public class AbstractIntegrationTest {
 
          var edition= createEdition();
 
-         StorageDto storageDto = new StorageDto(null, 1, LocalDate.now(), BookState.FREE, edition.id());
+         StorageDto storageDto = new StorageDto(null, 1, LocalDate.now(), BookState.FREE.getValue(), edition.id());
         var result2 =   webTestClient
                 .post()
                 .uri(STORAGE_URI)

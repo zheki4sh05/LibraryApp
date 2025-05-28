@@ -6,20 +6,20 @@ spring:
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: postgres
+    password: 123456789
   flyway:
     url: jdbc:postgresql://localhost:5432/postgres
     enabled: true
     locations: classpath:db/migrates
     user: postgres
-    password: postgres
+    password: 123456789
     baselineOnMigrate: true
 server:
   port: 8080
 logging:
   level:
     org.springframework.r2dbc.core: INFO
-    io.r2dbc.postgresql.QUERY: INFO
+    io.r2dbc.postgresql.QUERY: DEBUG
     io.r2dbc.postgresql: INFO
 
 

@@ -32,7 +32,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
     public void create_storage_200(){
         var edition = createEdition();
 
-        StorageDto storageDto = new StorageDto(edition.id(), 1, LocalDate.now(), BookState.FREE, edition.id());
+        StorageDto storageDto = new StorageDto(edition.id(), 1, LocalDate.now(), BookState.FREE.getValue(), edition.id());
 
         webTestClient
                 .post()
@@ -140,7 +140,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
     public void delete_by_id_200(){
         var edition = createEdition();
 
-        StorageDto storageDto = new StorageDto(null, 1, LocalDate.now(), BookState.FREE,  edition.id());
+        StorageDto storageDto = new StorageDto(null, 1, LocalDate.now(), BookState.FREE.getValue(),  edition.id());
       var savedStorage =  webTestClient
                 .post()
                 .uri(STORAGE_URI)
@@ -168,7 +168,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
     @Test
     public void update_storage_200(){
         var storage = createStorage();
-        StorageDto storageDto = new StorageDto(storage.id(), 2, LocalDate.now(), BookState.FREE, storage.edition());
+        StorageDto storageDto = new StorageDto(storage.id(), 2, LocalDate.now(), BookState.FREE.getValue(), storage.edition());
         var savedStorage =  webTestClient
                 .put()
                 .uri(STORAGE_URI+"/"+storage.id())
@@ -186,7 +186,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
                 .assertNext(storage1->{
                     assertEquals(storageDto.rack(), storage1.getRack());
                     assertEquals(storageDto.edition(), storage1.getEdition());
-                    assertEquals(storageDto.status(), storage1.getStatus());
+                    assertEquals(storageDto.status(), storage1.getStatus().getValue());
                 })
                 .verifyComplete();
 

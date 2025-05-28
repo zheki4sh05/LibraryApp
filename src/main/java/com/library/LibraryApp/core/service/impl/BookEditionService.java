@@ -57,15 +57,7 @@ public class BookEditionService implements EditionService {
     public Mono<Page<EditionModel>> fetch(SearchEditionDto searchEditionDto, Pageable pageable) {
         log.info(searchEditionDto.toString());
         return editionRepository.fetchEditions(searchEditionDto, pageable);
-//        int size = pageable.getPageSize();
-//        int offset = SqlQueryFactoryUtil.calcOffset(pageable.getPageNumber(), size);
-//        String sql = SqlQueryFactoryUtil.createEditionQuery();
-//        Flux<EditionEntity> editionFlux = fetchQueries.fetchEdition(sql, searchEditionDto, size, offset);
-//        return editionFlux.collectList()
-//                .zipWith(editionRepository.count())
-//                .map(tuple->
-//                        new PageImpl<>(tuple.getT1(), pageable, tuple.getT2())
-//                );
+
 
     }
 }
