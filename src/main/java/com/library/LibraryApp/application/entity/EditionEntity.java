@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
@@ -20,14 +21,15 @@ public class EditionEntity {
     private String isbn;
     private int pages;
     private LocalDate publication;
-    private short number;
-    private UUID bookId;
+    private Integer number;
+    @Column("book_id")
+    private UUID book;
 
-    public EditionEntity(String isbn, int pages, LocalDate publication, short number, UUID bookId) {
+    public EditionEntity(String isbn, int pages, LocalDate publication, Integer number, UUID bookId) {
         this.isbn = isbn;
         this.pages = pages;
         this.publication = publication;
         this.number = number;
-        this.bookId = bookId;
+        this.book = bookId;
     }
 }

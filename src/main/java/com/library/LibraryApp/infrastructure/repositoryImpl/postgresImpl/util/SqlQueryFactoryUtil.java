@@ -1,9 +1,10 @@
-package com.library.LibraryApp.core.util;
+package com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util;
 
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import java.util.*;
-import java.util.stream.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SqlQueryFactoryUtil {
 
@@ -80,7 +81,7 @@ public class SqlQueryFactoryUtil {
     public static String createStorageQuery() {
         return """
                 select * from storage
-                where is_taken = :mode
+                where status = :mode
                 and accounting between :date_from and :date_to
                 and rack = :rack
                 limit :size offset :offset
@@ -89,14 +90,14 @@ public class SqlQueryFactoryUtil {
 
     }
 
-    private static void validateSort(Pageable pageable, List<String> ALLOWED_SORT_FIELDS) {
+    private static void validateSort(Pageable pageable, List<String> allowedSortFields) {
         if (pageable.getSort().isSorted()) {
             boolean hasInvalidSort = pageable.getSort().stream()
-                    .anyMatch(order -> !ALLOWED_SORT_FIELDS.contains(order.getProperty()));
+                    .anyMatch(order -> !allowedSortFields.contains(order.getProperty()));
 
             if (hasInvalidSort) {
                 throw new IllegalArgumentException(
-                        "Разрешена сортировка только по полям: " + ALLOWED_SORT_FIELDS);
+                        "Разрешена сортировка только по полям: " + allowedSortFields);
             }
         }
     }

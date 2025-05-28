@@ -1,22 +1,23 @@
 package com.library.LibraryApp.web.controller;
 
 import com.library.LibraryApp.application.dto.EditionDto;
-import com.library.LibraryApp.application.entity.EditionEntity;
-import com.library.LibraryApp.core.service.impl.*;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.EditionR2dbcRepository;
-import com.library.LibraryApp.web.mapper.*;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.boot.test.autoconfigure.web.reactive.*;
-import org.springframework.boot.test.mock.mockito.*;
-import org.springframework.http.*;
-import org.springframework.test.web.reactive.server.*;
-import reactor.core.publisher.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.time.*;
-import java.util.*;
+import com.library.LibraryApp.application.mapper.EditionMapper;
+import com.library.LibraryApp.core.model.EditionModel;
+import com.library.LibraryApp.core.service.impl.BookEditionService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
-import static org.mockito.Mockito.*;
+import java.time.LocalDate;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @WebFluxTest(EditionController.class)
 class EditionControllerMockTest {
@@ -27,8 +28,6 @@ class EditionControllerMockTest {
     @MockBean
     BookEditionService editionService;
 
-    @MockBean
-    EditionR2dbcRepository editionRepository;
 
     @MockBean
     EditionMapper editionMapper;
@@ -41,11 +40,11 @@ class EditionControllerMockTest {
                 200,
                 LocalDate.now().minusDays(1),
                 1,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
-        when(editionService.create(any())).thenReturn(Mono.just(new EditionEntity()));
-        when(editionMapper.toDto(any())).thenReturn((new EditionDto("", "",1, LocalDate.now(), 1, UUID.randomUUID().toString())));
+        when(editionService.create(any())).thenReturn(Mono.just(new EditionModel()));
+        when(editionMapper.toDto(any())).thenReturn(new EditionDto(null, "", 1, LocalDate.now(), 1, UUID.randomUUID()));
 
         webTestClient.post()
                 .uri("/edition")
@@ -63,7 +62,7 @@ class EditionControllerMockTest {
                 200,
                 LocalDate.now().minusDays(1),
                 1,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479") // Оборачиваем в UUID.fromString()
         );
 
         webTestClient.post()
@@ -82,7 +81,7 @@ class EditionControllerMockTest {
                 0,
                 LocalDate.now().minusDays(1),
                 1,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479") // Оборачиваем в UUID.fromString()
         );
 
         webTestClient.post()
@@ -93,11 +92,15 @@ class EditionControllerMockTest {
                 .expectStatus().isBadRequest();
     }
 
+
+
     @Test
     void getEditionById_WhenValidUuid_ReturnsOk() {
-        String validId = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
-        when(editionService.findById(validId)).thenReturn(Mono.just(new EditionEntity()));
-        when(editionMapper.toDto(any())).thenReturn((new EditionDto("", "",1, LocalDate.now(), 1, UUID.randomUUID().toString())));
+        UUID validId = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+
+        when(editionService.findById(validId)).thenReturn(Mono.just(new EditionModel()));
+        when(editionMapper.toDto(any())).thenReturn(new EditionDto(null, "", 1, LocalDate.now(), 1, UUID.randomUUID()));
+
         webTestClient.get()
                 .uri("/edition/" + validId)
                 .exchange()
@@ -122,7 +125,6 @@ class EditionControllerMockTest {
                 .expectStatus().isBadRequest();
     }
 
-
     @Test
     void fetch_WhenInvalidPublicationDate_ReturnsBadRequest() {
         webTestClient.get()
@@ -144,7 +146,7 @@ class EditionControllerMockTest {
     }
 
     @Test
-    void fetch_WhenNameISTooLong_ReturnsBadRequest() {
+    void fetch_WhenNameIsTooLong_ReturnsBadRequest() {
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/edition/fetch")
                         .queryParam("name", "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
@@ -156,16 +158,17 @@ class EditionControllerMockTest {
     @Test
     void updateEdition_WhenValidDto_ReturnsOk() {
         EditionDto validDto = new EditionDto(
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479", // валидный UUID (обязателен для обновления)
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"), // Оборачиваем в UUID
                 "9783161484100",
                 200,
                 LocalDate.now().minusDays(1),
                 1,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479") // Оборачиваем в UUID
         );
 
-        when(editionService.update(any())).thenReturn(Mono.just(new EditionEntity()));
-        when(editionMapper.toDto(any())).thenReturn((new EditionDto("", "",1, LocalDate.now(), 1, UUID.randomUUID().toString())));
+        when(editionService.update(any())).thenReturn(Mono.just(new EditionModel()));
+        when(editionMapper.toDto(any())).thenReturn(new EditionDto(null, "", 1, LocalDate.now(), 1, UUID.randomUUID()));
+
         webTestClient.put()
                 .uri("/edition")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -173,6 +176,7 @@ class EditionControllerMockTest {
                 .exchange()
                 .expectStatus().isOk();
     }
+
 
     @Test
     void updateEdition_WhenMissingId_ReturnsBadRequest() {
@@ -182,7 +186,7 @@ class EditionControllerMockTest {
                 200,
                 LocalDate.now().minusDays(1),
                 1,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479") // Оборачиваем в UUID
         );
 
         webTestClient.put()
@@ -195,19 +199,21 @@ class EditionControllerMockTest {
 
     @Test
     void deleteEdition_WhenValidId_ReturnsOk() {
-        String validId = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
+        UUID validId = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"); // Используем UUID
+
         when(editionService.delete(validId)).thenReturn(Mono.just(validId));
 
         webTestClient.delete()
                 .uri("/edition/" + validId)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class)
+                .expectBody(UUID.class)
                 .consumeWith(stringEntityExchangeResult -> {
-                   var body = stringEntityExchangeResult.getResponseBody();
-                   assertEquals(validId, body);
+                    var body = stringEntityExchangeResult.getResponseBody();
+                    assertEquals(validId, body);
                 });
     }
+
 
     @Test
     void deleteEdition_WhenBlankId_ReturnsBadRequest() {

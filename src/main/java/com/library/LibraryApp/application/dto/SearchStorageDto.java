@@ -3,6 +3,7 @@ package com.library.LibraryApp.application.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -13,9 +14,11 @@ public record SearchStorageDto
                 BookState mode,
 
                 @NotNull
+                @PastOrPresent
                 LocalDate dateFrom,
 
                 @NotNull
+                @PastOrPresent
                 LocalDate dateTo,
 
                 @Min(1) @Max(100)
@@ -24,7 +27,5 @@ public record SearchStorageDto
 
 
 {
-        public SearchStorageDto(){
-                this(BookState.FREE, LocalDate.now().minusDays(1), LocalDate.now(), 1);
-        }
+
 }

@@ -5,8 +5,10 @@ import com.library.LibraryApp.application.mapper.AuthorMapper;
 import com.library.LibraryApp.core.model.AuthorModel;
 import com.library.LibraryApp.core.repository.AuthorRepository;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.AuthorR2dbcRepo;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -19,6 +21,8 @@ public class AuthorModelRepository implements AuthorRepository {
 
     private final AuthorR2dbcRepo authorR2dbcRepo;
     private final AuthorMapper authorMapper;
+    private final FetchQueries fetchQueries;
+
 
     @Override
     public Mono<AuthorModel> save(AuthorModel newAuthor) {
@@ -37,7 +41,12 @@ public class AuthorModelRepository implements AuthorRepository {
 
     @Override
     public Mono<Page<AuthorModel>> fetchAuthors(SearchAuthorDto searchAuthorDto, Pageable pageable) {
-        return null;
+        return fetchQueries.fetchAuthors(searchAuthorDto, pageable)
+                .map(authorMapper::toModel)
+                .collectList()
+                .flatMap(authorModels -> authorR2dbcRepo.count()
+                        .map(total->new PageImpl<>(authorModels, pageable, total))
+                );
     }
 
     @Override

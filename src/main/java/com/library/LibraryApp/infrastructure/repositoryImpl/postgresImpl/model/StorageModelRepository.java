@@ -5,8 +5,10 @@ import com.library.LibraryApp.application.mapper.StorageMapper;
 import com.library.LibraryApp.core.model.StorageModel;
 import com.library.LibraryApp.core.repository.StorageRepository;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.StorageR2dbcRepository;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -20,7 +22,7 @@ public class StorageModelRepository implements StorageRepository {
 
     private final StorageR2dbcRepository storageR2dbcRepository;
     private StorageMapper storageMapper;
-
+    private final FetchQueries fetchQueries;
 
 
     @Override
@@ -45,7 +47,12 @@ public class StorageModelRepository implements StorageRepository {
 
     @Override
     public Mono<Page<StorageModel>> fetchStorages(SearchStorageDto searchStorageDto, Pageable pageable) {
-        return null;
+        return fetchQueries.fetchStorages(searchStorageDto, pageable)
+                .map(storageMapper::toModel)
+                .collectList()
+                .flatMap(storageModels -> storageR2dbcRepository.count()
+                        .map(total->new PageImpl<>(storageModels, pageable, total))
+                );
     }
 
     @Override

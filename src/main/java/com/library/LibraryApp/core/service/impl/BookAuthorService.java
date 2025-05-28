@@ -28,15 +28,6 @@ public class BookAuthorService implements AuthorService {
     @Override
     public Mono<Page<AuthorModel>> fetch(SearchAuthorDto searchAuthorDto, Pageable pageable) {
         return authorRepository.fetchAuthors(searchAuthorDto, pageable);
-//        int size = pageable.getPageSize();
-//        int offset = SqlQueryFactoryUtil.calcOffset(pageable.getPageNumber(), size);
-//        String sql = SqlQueryFactoryUtil.createAuthorQuery();
-//        Flux<Author> authors = fetchQueries.fetchAuthors(sql, searchAuthorDto, size, offset);
-//        return authors.collectList()
-//                .zipWith(authorRepository.count())
-//                .map(tuple->
-//                        new PageImpl<>(tuple.getT1(), pageable, tuple.getT2())
-//                );
     }
 
 

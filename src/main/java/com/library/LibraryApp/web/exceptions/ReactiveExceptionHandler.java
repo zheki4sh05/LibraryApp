@@ -2,6 +2,7 @@ package com.library.LibraryApp.web.exceptions;
 
 
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.TransientDataAccessResourceException;
@@ -60,6 +61,11 @@ public class ReactiveExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(ex.getMessage()));
+    }
+
+    @ExceptionHandler(TypeMismatchException.class)
+    public ResponseEntity<String> handleTypeMismatch(TypeMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid UUID format");
     }
 
 

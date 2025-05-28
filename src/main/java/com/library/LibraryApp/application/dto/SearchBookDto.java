@@ -1,16 +1,13 @@
 package com.library.LibraryApp.application.dto;
 
-public record SearchBookDto(
+import lombok.*;
 
-        String udk,
-        String name,
-        String author
-
-) {
-    public SearchBookDto(){
-        this("", "", "");
-    }
-
-
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+public class SearchBookDto
+ {
+    private  String udk="";
+     private String name="";
+     private  String author="";
 }

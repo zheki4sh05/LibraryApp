@@ -6,12 +6,13 @@ import com.library.LibraryApp.web.markers.BasicInfo;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record StorageDto(
 
-    @Pattern(regexp = RegexPatterns.UUID, groups = {AdvancedInfo.class})
-    @NotBlank(groups = {AdvancedInfo.class})
-    String id,
+
+    @NotNull(groups = {AdvancedInfo.class})
+    UUID id,
 
     @Min(value = 1, groups = {AdvancedInfo.class, BasicInfo.class} )
     @Max(value = 100, groups = {AdvancedInfo.class, BasicInfo.class})
@@ -21,10 +22,9 @@ public record StorageDto(
     LocalDate accounting,
 
     @NotNull(groups = {AdvancedInfo.class, BasicInfo.class})
-    Boolean taken,
+    BookState status,
 
-    @NotBlank(groups = {AdvancedInfo.class, BasicInfo.class})
-    @Pattern(regexp = RegexPatterns.UUID, groups = {AdvancedInfo.class, BasicInfo.class})
-    String edition
+    @NotNull(groups = {AdvancedInfo.class, BasicInfo.class})
+    UUID edition
 ) {
 }

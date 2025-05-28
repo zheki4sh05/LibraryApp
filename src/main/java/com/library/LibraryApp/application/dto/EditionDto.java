@@ -7,13 +7,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.service.annotation.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 
 public record EditionDto(
 
-        @Pattern(regexp = RegexPatterns.UUID, groups = {AdvancedInfo.class})
-                @NotBlank(groups = {AdvancedInfo.class})
-        String id,
+
+        @NotNull(groups = {AdvancedInfo.class})
+        UUID id,
 
         @Pattern(regexp = RegexPatterns.ISBN, groups = {AdvancedInfo.class, BasicInfo.class})
         String isbn,
@@ -31,9 +32,8 @@ public record EditionDto(
         @Max(value = 20, groups = {AdvancedInfo.class, BasicInfo.class})
         Integer number,
 
-        @NotBlank(groups = {AdvancedInfo.class, BasicInfo.class})
-        @Pattern(regexp = RegexPatterns.UUID,groups = {AdvancedInfo.class, BasicInfo.class})
-        String book
+        @NotNull(groups = {AdvancedInfo.class, BasicInfo.class})
+        UUID book
 
 ) {
 }

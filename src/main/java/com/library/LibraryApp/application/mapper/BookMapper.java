@@ -9,18 +9,8 @@ import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
 public interface BookMapper {
-    @Mappings({
-            @Mapping(target = "id", expression = "java(book.getId().toString())"),
-            @Mapping(target = "name", source = "name"),
-            @Mapping(target = "udk", source = "udk"),
-            @Mapping(target = "author", expression = "java(book.getAuthor().toString())"),
-    })
+
     BookDto toDto(BookModel book);
-
-    @Mapping(target = "id", expression = "java(java.util.UUID.fromString(book.id()))")
-    @Mapping(target = "author", expression = "java(java.util.UUID.fromString(book.author()))")
-    BookEntity toEntity(BookDto book);
-
 
     @Mapping(target = "id", ignore = true)
     BookModel toNewModel(BookDto bookDto);

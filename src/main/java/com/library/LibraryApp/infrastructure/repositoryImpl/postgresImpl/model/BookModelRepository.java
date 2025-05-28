@@ -5,8 +5,10 @@ import com.library.LibraryApp.application.mapper.BookMapper;
 import com.library.LibraryApp.core.model.BookModel;
 import com.library.LibraryApp.core.repository.BookRepository;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.BookR2dbcRepo;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -19,6 +21,7 @@ public class BookModelRepository implements BookRepository {
 
     private final BookR2dbcRepo bookR2dbcRepo;
     private final BookMapper bookMapper;
+    private final FetchQueries fetchQueries;
 
     @Override
     public Mono<BookModel> save(BookModel newBook) {
@@ -27,7 +30,12 @@ public class BookModelRepository implements BookRepository {
 
     @Override
     public Mono<Page<BookModel>> fetchBooks(SearchBookDto searchBookDto, Pageable pageable) {
-        return null;
+        return fetchQueries.fetchBooks(searchBookDto, pageable)
+                .map(bookMapper::toModel)
+                .collectList()
+                .flatMap(bookModels -> bookR2dbcRepo.count()
+                        .map(total->new PageImpl<>(bookModels, pageable, total))
+                );
     }
 
     @Override

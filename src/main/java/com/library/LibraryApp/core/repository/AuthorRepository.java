@@ -11,6 +11,7 @@ import java.util.UUID;
 
 
 public interface AuthorRepository {
+
     Mono<AuthorModel> save(AuthorModel newAuthor);
 
     Mono<Long> count();

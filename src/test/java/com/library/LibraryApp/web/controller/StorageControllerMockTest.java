@@ -1,9 +1,11 @@
 package com.library.LibraryApp.web.controller;
 
+import com.library.LibraryApp.application.dto.BookState;
 import com.library.LibraryApp.application.dto.StorageDto;
 import com.library.LibraryApp.application.entity.StorageEntity;
+import com.library.LibraryApp.application.mapper.StorageMapper;
+import com.library.LibraryApp.core.model.StorageModel;
 import com.library.LibraryApp.core.service.impl.*;
-import com.library.LibraryApp.web.mapper.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.autoconfigure.web.reactive.*;
@@ -13,6 +15,7 @@ import org.springframework.test.web.reactive.server.*;
 import reactor.core.publisher.*;
 
 import java.time.*;
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
@@ -28,14 +31,16 @@ class StorageControllerMockTest {
     @MockBean
     private StorageMapper storageMapper;
 
+    UUID id = UUID.randomUUID();
+
 
     private StorageDto createValidAdvancedDto() {
         return new StorageDto(
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                id,
                 1,
                 LocalDate.now().minusDays(1),
-                false,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                BookState.FREE,
+                id
         );
     }
 
@@ -45,19 +50,19 @@ class StorageControllerMockTest {
                 null,
                 5,
                 LocalDate.of(2024, 5, 25),
-                true,
-                "987e6543-e21a-12d3-a456-426614174111"
+                BookState.BORROW,
+                UUID.fromString("987e6543-e21a-12d3-a456-426614174111")
         );
-        StorageEntity entity = new StorageEntity();
+        StorageModel entity = new StorageModel();
         StorageDto responseDto = new StorageDto(
-                "123e4567-e89b-12d3-a456-426614174000",
+                UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
                 5,
                 LocalDate.of(2024, 5, 25),
-                true,
-                "987e6543-e21a-12d3-a456-426614174111"
+                BookState.BORROW,
+                UUID.fromString("987e6543-e21a-12d3-a456-426614174111")
         );
 
-        when(storageMapper.toNewEntity(validDto)).thenReturn(entity);
+        when(storageMapper.toNewModel(validDto)).thenReturn(entity);
         when(storageService.create(entity)).thenReturn(Mono.just(entity));
         when(storageMapper.toDto(entity)).thenReturn(responseDto);
 
@@ -76,8 +81,8 @@ class StorageControllerMockTest {
                 null,
                 5,
                 LocalDate.of(2024, 5, 25),
-                true,
-                "invalid-id"
+                BookState.BORROW,
+                null
         );
 
         webTestClient.post()
@@ -89,25 +94,25 @@ class StorageControllerMockTest {
     }
     @Test
     void deleteById_WhenValidUuid_ReturnsOk() {
-        String validId = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
+        UUID validId = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479");
         when(storageService.deleteById(validId)).thenReturn(Mono.just(validId));
 
         webTestClient.delete()
                 .uri("/storage/" + validId)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo(validId);
+                .expectBody(UUID.class).isEqualTo(validId);
     }
 
     @Test
     void updateStorage_WhenValidAdvancedDto_ReturnsOk() {
         StorageDto requestDto = createValidAdvancedDto();
-        StorageEntity entity = new StorageEntity();
+        StorageModel model = new StorageModel();
         StorageDto responseDto = createValidAdvancedDto();
 
-        when(storageMapper.toEntity(requestDto)).thenReturn(entity);
-        when(storageService.update(entity)).thenReturn(Mono.just(entity));
-        when(storageMapper.toDto(entity)).thenReturn(responseDto);
+        when(storageMapper.toModel(requestDto)).thenReturn(model);
+        when(storageService.update(model)).thenReturn(Mono.just(model));
+        when(storageMapper.toDto(model)).thenReturn(responseDto);
 
         webTestClient.patch()
                 .uri("/storage")
@@ -124,8 +129,8 @@ class StorageControllerMockTest {
                 null,
                 1,
                 LocalDate.now().minusDays(1),
-                false,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                BookState.FREE,
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
         webTestClient.patch()
@@ -140,8 +145,8 @@ class StorageControllerMockTest {
                 null,
                 0,
                 LocalDate.now().minusDays(1),
-                false,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                BookState.FREE,
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
         webTestClient.post()
@@ -157,8 +162,8 @@ class StorageControllerMockTest {
                 null,
                 1,
                 LocalDate.now().plusDays(1),
-                false,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                BookState.FREE,
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
         webTestClient.post()
@@ -175,7 +180,7 @@ class StorageControllerMockTest {
                 1,
                 LocalDate.now().minusDays(1),
                 null,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
         webTestClient.post()
@@ -204,7 +209,7 @@ class StorageControllerMockTest {
     @Test
     void fetch_FutureFromDate_ReturnsBadRequest() {
         webTestClient.get()
-                .uri("/storage?mode=AVAILABLE&rack=5&from=2050-01-01")
+                .uri("/storage?mode=FREE&rack=5&from=2050-01-01")
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -228,15 +233,15 @@ class StorageControllerMockTest {
     @Test
     void updateStorage_ValidDto_ReturnsOk() {
         StorageDto validDto = new StorageDto(
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                 5,
                 LocalDate.now().minusDays(1),
-                false,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                BookState.FREE,
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
         when(storageMapper.toEntity(any())).thenReturn(new StorageEntity());
-        when(storageService.update(any())).thenReturn(Mono.just(new StorageEntity()));
+        when(storageService.update(any())).thenReturn(Mono.just(new StorageModel()));
         when(storageMapper.toDto(any())).thenReturn(validDto);
 
         webTestClient.patch()
@@ -254,8 +259,8 @@ class StorageControllerMockTest {
                 null,
                 5,
                 LocalDate.now().minusDays(1),
-                false,
-                "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                BookState.FREE,
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
         webTestClient.patch()
@@ -268,14 +273,14 @@ class StorageControllerMockTest {
 
     @Test
     void deleteById_ValidUuid_ReturnsOk() {
-        String validUuid = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
-        when(storageService.deleteById(validUuid)).thenReturn(Mono.just("Deleted"));
+        UUID validUuid = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+        when(storageService.deleteById(validUuid)).thenReturn(Mono.just(validUuid));
 
         webTestClient.delete()
                 .uri("/storage/" + validUuid)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Deleted");
+                .expectBody(UUID.class).isEqualTo(validUuid);
     }
 
     @Test

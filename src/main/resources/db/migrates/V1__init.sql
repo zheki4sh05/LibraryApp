@@ -1,3 +1,5 @@
+CREATE TYPE book_enum as enum ('FREE', 'BORROW');
+CREATE CAST (varchar AS book_enum) WITH INOUT AS IMPLICIT;
 create table author
 (
     id uuid primary key default gen_random_uuid(),
@@ -34,7 +36,7 @@ create table edition
 create table storage
 (
     id uuid primary key default gen_random_uuid(),
-    is_taken boolean not null default true,
+    status book_enum,
     rack integer not null,
     accounting date not null,
     book_edition_id uuid not null,

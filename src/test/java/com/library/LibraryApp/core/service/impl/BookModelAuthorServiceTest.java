@@ -2,7 +2,7 @@ package com.library.LibraryApp.core.service.impl;
 
 import com.library.LibraryApp.application.entity.AuthorEntity;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.AuthorR2dbcRepo;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.FetchQueries;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
 import com.library.LibraryApp.application.dto.SearchAuthorDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +47,7 @@ class BookModelAuthorServiceTest {
         SearchAuthorDto searchAuthorDto = new SearchAuthorDto("");
 
         when((authorR2DbcRepo.count())).thenReturn(Mono.just(3L));
-        when(fetchQueries.fetchAuthors(any(String.class), any(SearchAuthorDto.class), any(Integer.class), any(Integer.class))).thenReturn(authorFlux);
+        when(fetchQueries.fetchAuthors(any(SearchAuthorDto.class), PageRequest.of(0, 10))).thenReturn(authorFlux);
 
         Pageable pageable = PageRequest.of(0, 10);
 

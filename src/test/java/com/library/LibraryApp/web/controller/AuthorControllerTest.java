@@ -172,7 +172,7 @@ class AuthorControllerTest extends AbstractIntegrationTest {
                 .verifyComplete();
 
         AuthorDto currentAuthorDto = AuthorDto.builder()
-                .id(UUID.randomUUID().toString())
+                .id(UUID.randomUUID())
                 .name("author")
                 .build();
         webTestClient
@@ -264,7 +264,7 @@ class AuthorControllerTest extends AbstractIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class)
+                .expectBody(UUID.class)
                 .consumeWith(authorDtoEntityExchangeResult -> {
                     var body = authorDtoEntityExchangeResult.getResponseBody();
                     assertNotNull(body);

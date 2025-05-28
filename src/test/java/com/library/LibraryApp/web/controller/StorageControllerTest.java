@@ -32,7 +32,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
     public void create_storage_200(){
         var edition = createEdition();
 
-        StorageDto storageDto = new StorageDto(edition.id(), 1, LocalDate.now(), false, edition.id());
+        StorageDto storageDto = new StorageDto(edition.id(), 1, LocalDate.now(), BookState.FREE, edition.id());
 
         webTestClient
                 .post()
@@ -58,14 +58,16 @@ class StorageControllerTest extends AbstractIntegrationTest {
     public void fetch_with_params_200(){
         var edition = createEdition();
         List<StorageEntity> storages = List.of(
-                new StorageEntity(null, 5, LocalDate.of(2023, 6, 10), false, UUID.fromString(edition.id())),
-                new StorageEntity(null, 12, LocalDate.of(2024, 2, 15), true, UUID.fromString(edition.id())),
-                new StorageEntity(null, 5, LocalDate.of(2022, 11, 30), false, UUID.fromString(edition.id())),
-                new StorageEntity(null, 3, LocalDate.of(2021, 8, 20), true, UUID.fromString(edition.id())),
-                new StorageEntity(null, 15, LocalDate.of(2020, 5, 5), false, UUID.fromString(edition.id())),
-                new StorageEntity(null, 9, LocalDate.of(2023, 11, 1), true, UUID.fromString(edition.id())),
-                new StorageEntity(null, 6, LocalDate.of(2024, 4, 7), false, UUID.fromString(edition.id()))
+                new StorageEntity(null, 5, LocalDate.of(2023, 6, 10), BookState.FREE, edition.id()),
+                new StorageEntity(null, 12, LocalDate.of(2024, 2, 15), BookState.BORROW, edition.id()),
+                new StorageEntity(null, 5, LocalDate.of(2022, 11, 30), BookState.FREE, edition.id()),
+                new StorageEntity(null, 3, LocalDate.of(2021, 8, 20), BookState.BORROW, edition.id()),
+                new StorageEntity(null, 15, LocalDate.of(2020, 5, 5), BookState.FREE, edition.id()),
+                new StorageEntity(null, 9, LocalDate.of(2023, 11, 1), BookState.BORROW, edition.id()),
+                new StorageEntity(null, 6, LocalDate.of(2024, 4, 7), BookState.FREE, edition.id())
         );
+
+
         storageRepository.saveAll(storages).subscribe();
 
         webTestClient
@@ -98,9 +100,9 @@ class StorageControllerTest extends AbstractIntegrationTest {
     public void find_by_edition_id_200(){
         var edition = createEdition();
         List<StorageEntity> storages = List.of(
-                new StorageEntity(null, 5, LocalDate.of(2023, 6, 10), true, UUID.fromString(edition.id())),
-                new StorageEntity(null, 5, LocalDate.of(2024, 2, 15), true, UUID.fromString(edition.id())),
-                new StorageEntity(null, 5, LocalDate.of(2022, 11, 30), true, UUID.fromString(edition.id()))
+                new StorageEntity(null, 5, LocalDate.of(2023, 6, 10), BookState.BORROW, edition.id()),
+                new StorageEntity(null, 5, LocalDate.of(2024, 2, 15), BookState.BORROW, edition.id()),
+                new StorageEntity(null, 5, LocalDate.of(2022, 11, 30), BookState.BORROW, edition.id())
         );
 
         storageRepository.saveAll(storages).subscribe();
@@ -136,7 +138,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
     public void delete_by_id_200(){
         var edition = createEdition();
 
-        StorageDto storageDto = new StorageDto(null, 1, LocalDate.now(), false,  edition.id());
+        StorageDto storageDto = new StorageDto(null, 1, LocalDate.now(), BookState.FREE,  edition.id());
       var savedStorage =  webTestClient
                 .post()
                 .uri(STORAGE_URI)
@@ -152,7 +154,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
                 .uri(STORAGE_URI+"/"+savedStorage.id())
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class)
+                .expectBody(UUID.class)
                 .consumeWith(stringEntityExchangeResult -> {
                     var body = stringEntityExchangeResult.getResponseBody();
                     assertEquals(savedStorage.id(), body);
@@ -164,7 +166,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
     @Test
     public void update_storage_200(){
         var storage = createStorage();
-        StorageDto storageDto = new StorageDto(storage.id(), 2, LocalDate.now(), false, storage.edition());
+        StorageDto storageDto = new StorageDto(storage.id(), 2, LocalDate.now(), BookState.FREE, storage.edition());
         var savedStorage =  webTestClient
                 .patch()
                 .uri(STORAGE_URI)
@@ -177,12 +179,12 @@ class StorageControllerTest extends AbstractIntegrationTest {
         assertNotNull(savedStorage);
         assertEquals(storage.id(),savedStorage.id());
 
-        var monoStorage = storageRepository.findById(UUID.fromString(storage.id()));
+        var monoStorage = storageRepository.findById(storage.id());
         StepVerifier.create(monoStorage)
                 .assertNext(storage1->{
                     assertEquals(storageDto.rack(), storage1.getRack());
-                    assertEquals(storageDto.edition(), storage1.getEdition().toString());
-                    assertEquals(storageDto.taken(), storage1.getTaken());
+                    assertEquals(storageDto.edition(), storage1.getEdition());
+                    assertEquals(storageDto.status(), storage1.getStatus());
                 })
                 .verifyComplete();
 

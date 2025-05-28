@@ -93,9 +93,9 @@ class EditionControllerTest extends AbstractIntegrationTest {
         var book = createBookDto(author.getId());
 
         List<EditionEntity> editions = List.of(
-                new EditionEntity( "9780123456789", 250, LocalDate.of(2019, 6, 10), (short) 1, UUID.fromString(book.id())),
-                new EditionEntity( "9791234567890", 320, LocalDate.of(2020, 2, 5), (short) 2, UUID.fromString(book.id())),
-                new EditionEntity( "9782123456789", 400, LocalDate.of(2021, 11, 30), (short) 3, UUID.fromString(book.id()))
+                new EditionEntity( "9780123456789", 250, LocalDate.of(2019, 6, 10),  1,book.id()),
+                new EditionEntity( "9791234567890", 320, LocalDate.of(2020, 2, 5), 2, book.id()),
+                new EditionEntity( "9782123456789", 400, LocalDate.of(2021, 11, 30), 3, book.id())
         );
 
         editionRepository.saveAll(editions).subscribe();
@@ -157,7 +157,7 @@ class EditionControllerTest extends AbstractIntegrationTest {
     public void update_not_existed_edition_404(){
         var author = createAuthor();
         var book = createBookDto(author.getId());
-        EditionDto edition1 = new EditionDto(UUID.randomUUID().toString(), "9781123456789", 1, LocalDate.parse("1970-09-09"), 1, book.id());
+        EditionDto edition1 = new EditionDto(UUID.randomUUID(), "9781123456789", 1, LocalDate.parse("1970-09-09"), 1, book.id());
       webTestClient
                 .put()
                 .uri(EDITION_URI)
@@ -173,7 +173,7 @@ class EditionControllerTest extends AbstractIntegrationTest {
     @Test
     public void update_with_not_existed_book_404(){
         var edition = createEdition();
-        EditionDto edition1 = new EditionDto(edition.id(), "9781123456789", 1, LocalDate.parse("1970-09-09"), 1, UUID.randomUUID().toString());
+        EditionDto edition1 = new EditionDto(edition.id(), "9781123456789", 1, LocalDate.parse("1970-09-09"), 1, UUID.randomUUID());
         webTestClient
                 .put()
                 .uri(EDITION_URI)
@@ -195,7 +195,7 @@ class EditionControllerTest extends AbstractIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class);
+                .expectBody(UUID.class);
     }
 
 

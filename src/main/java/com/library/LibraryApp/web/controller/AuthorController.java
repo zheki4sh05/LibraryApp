@@ -10,6 +10,7 @@ import com.library.LibraryApp.web.markers.AdvancedInfo;
 import com.library.LibraryApp.web.markers.BasicInfo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,7 @@ public class AuthorController {
 
     @GetMapping
     Mono<Page<AuthorDto>> fetch(
-           @Valid SearchAuthorDto searchAuthorDto,
+       @ModelAttribute  @Valid SearchAuthorDto searchAuthorDto,
             Pageable pageable
     ){
 
@@ -46,7 +47,7 @@ public class AuthorController {
 
     @GetMapping("/{id}")
     Mono<AuthorDto> findById(
-            @PathVariable("id") @NotBlank UUID id
+            @PathVariable("id") @NotNull UUID id
     ){
         return authorService.findById(id).map(authorMapper::toDto);
     }
@@ -60,7 +61,7 @@ public class AuthorController {
 
     @DeleteMapping("/{id}")
     Mono<UUID> deleteById(
-            @PathVariable("id") @NotBlank @Pattern(regexp = RegexPatterns.UUID) UUID id){
+            @PathVariable("id") @NotNull UUID id){
         return authorService.deleteById(id);
     }
 

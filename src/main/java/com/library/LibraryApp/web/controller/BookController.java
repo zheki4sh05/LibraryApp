@@ -8,6 +8,7 @@ import com.library.LibraryApp.web.markers.AdvancedInfo;
 import com.library.LibraryApp.web.markers.BasicInfo;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/book")
 @AllArgsConstructor
+@Slf4j
 public class BookController {
 
     private final BookService bookService;
@@ -35,9 +37,10 @@ public class BookController {
 
     @GetMapping
     public Mono<Page<BookDto>> fetch(
-            @Valid SearchBookDto searchBookDto,
+          SearchBookDto searchBookDto,
             Pageable pageable
     ){
+        log.info(searchBookDto.toString());
         return bookService.fetch(searchBookDto,pageable)
                 .map(page -> page.map(bookMapper::toDto));
 

@@ -1,9 +1,6 @@
 package com.library.LibraryApp;
 
-import com.library.LibraryApp.application.dto.AuthorDto;
-import com.library.LibraryApp.application.dto.BookDto;
-import com.library.LibraryApp.application.dto.EditionDto;
-import com.library.LibraryApp.application.dto.StorageDto;
+import com.library.LibraryApp.application.dto.*;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.AuthorR2dbcRepo;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.BookR2dbcRepo;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.EditionR2dbcRepository;
@@ -21,6 +18,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -31,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Testcontainers
 public class AbstractIntegrationTest {
 
-    @Autowired
-    CatalogRepository catalogRepository;
     @Autowired
     protected BookR2dbcRepo bookR2dbcRepo;
 
@@ -67,10 +63,6 @@ public class AbstractIntegrationTest {
          postgreSQLContainer.start();
      }
 
-//    @AfterAll
-//    static void stopContainer(){
-//        postgreSQLContainer.stop();
-//    }
 
 
 
@@ -108,8 +100,8 @@ public class AbstractIntegrationTest {
         assertNotNull(body);
         return body;
     }
-    public BookDto createBookDto(String authorId){
-        BookDto createBookDto = new BookDto("", "book", "123.45.678", authorId);
+    public BookDto createBookDto(UUID authorId){
+        BookDto createBookDto = new BookDto(null, "book", "123.45.678", authorId);
         var result2 =   webTestClient
                 .post()
                 .uri(BOOK_URI)
@@ -163,7 +155,7 @@ public class AbstractIntegrationTest {
 
          var edition= createEdition();
 
-         StorageDto storageDto = new StorageDto(null, 1, LocalDate.now(), false, edition.id());
+         StorageDto storageDto = new StorageDto(null, 1, LocalDate.now(), BookState.FREE, edition.id());
         var result2 =   webTestClient
                 .post()
                 .uri(STORAGE_URI)

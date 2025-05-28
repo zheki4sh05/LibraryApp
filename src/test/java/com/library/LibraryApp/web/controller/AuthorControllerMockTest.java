@@ -1,9 +1,9 @@
 package com.library.LibraryApp.web.controller;
 
+import com.library.LibraryApp.application.mapper.AuthorMapper;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.AuthorR2dbcRepo;
 import com.library.LibraryApp.core.service.impl.BookAuthorService;
 import com.library.LibraryApp.application.dto.AuthorDto;
-import com.library.LibraryApp.web.mapper.AuthorMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
@@ -77,20 +77,23 @@ public class AuthorControllerMockTest {
 
     @Test
     public void test_update_400(){
-
-
-        AuthorDto createAuthorDto = new AuthorDto("wrong-id", "right-name");
+        String author = """
+                {
+                  "id": "wrong-id",
+                  "name": "Иван Иванов"
+                }
+                """;
 
         webTestClient.patch().uri(author_uri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(createAuthorDto)
+                .bodyValue(author)
                 .exchange()
                 .expectStatus()
                 .is4xxClientError()
                 .expectBody(String.class);
 
-        AuthorDto createAuthorDto2 = new AuthorDto(UUID.randomUUID().toString(), "123");
+        AuthorDto createAuthorDto2 = new AuthorDto(UUID.randomUUID(), "123");
 
         webTestClient.patch().uri(author_uri)
                 .contentType(MediaType.APPLICATION_JSON)

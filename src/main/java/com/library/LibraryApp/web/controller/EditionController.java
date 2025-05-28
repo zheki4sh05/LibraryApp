@@ -32,6 +32,7 @@ public class EditionController {
             @RequestBody
             @Validated(BasicInfo.class) EditionDto editionDto
     ) {
+
      return editionService.create(editionMapper.toNewModel(editionDto)).map(editionMapper::toDto);
     }
 
@@ -43,9 +44,10 @@ public class EditionController {
 
     @GetMapping("/fetch")
     public Mono<Page<EditionDto>> fetch(
-        @Valid  SearchEditionDto searchEditionDto,
+           @Valid SearchEditionDto searchEditionDto,
         Pageable pageable
     ){
+        log.info(searchEditionDto.toString());
         return editionService.fetch(searchEditionDto, pageable).map(page -> page.map(editionMapper::toDto));
     };
 

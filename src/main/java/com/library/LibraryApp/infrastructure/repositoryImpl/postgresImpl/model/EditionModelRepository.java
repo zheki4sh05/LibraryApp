@@ -5,8 +5,10 @@ import com.library.LibraryApp.application.mapper.EditionMapper;
 import com.library.LibraryApp.core.model.EditionModel;
 import com.library.LibraryApp.core.repository.EditionRepository;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.EditionR2dbcRepository;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -19,6 +21,7 @@ public class EditionModelRepository implements EditionRepository {
 
     private final EditionR2dbcRepository editionR2dbcRepository;
     private final EditionMapper editionMapper;
+    private final FetchQueries fetchQueries;
 
     @Override
     public Mono<EditionModel> save(EditionModel edition) {
@@ -42,6 +45,12 @@ public class EditionModelRepository implements EditionRepository {
 
     @Override
     public Mono<Page<EditionModel>> fetchEditions(SearchEditionDto searchEditionDto, Pageable pageable) {
-        return null;
+
+        return fetchQueries.fetchEdition(searchEditionDto, pageable)
+                .map(editionMapper::toModel)
+                .collectList()
+                .flatMap(editionModels -> editionR2dbcRepository.count()
+                        .map(total->new PageImpl<>(editionModels, pageable, total))
+                );
     }
 }

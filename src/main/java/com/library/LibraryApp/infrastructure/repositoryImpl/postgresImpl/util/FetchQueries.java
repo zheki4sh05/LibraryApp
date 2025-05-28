@@ -1,4 +1,4 @@
-package com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl;
+package com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util;
 
 import com.library.LibraryApp.application.dto.*;
 import com.library.LibraryApp.application.entity.AuthorEntity;
@@ -6,6 +6,7 @@ import com.library.LibraryApp.application.entity.BookEntity;
 import com.library.LibraryApp.application.entity.EditionEntity;
 import com.library.LibraryApp.application.entity.StorageEntity;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -19,35 +20,34 @@ public class FetchQueries {
 
     private final DatabaseClient databaseClient;
 
-
-
-    public Flux<StorageEntity> fetchStorages(String sql, SearchStorageDto searchStorageDto, int size, int offset) {
+    public Flux<StorageEntity> fetchStorages(SearchStorageDto searchStorageDto, Pageable pageable) {
+        var sql = SqlQueryFactoryUtil.createStorageQuery();
         return databaseClient.sql(sql)
-                .bind("mode", !searchStorageDto.mode().equals(BookState.FREE))
+                .bind("mode", searchStorageDto.mode())
                 .bind("rack", searchStorageDto.rack())
                 .bind("date_to", searchStorageDto.dateTo())
                 .bind("date_from", searchStorageDto.dateFrom())
-                .bind("size", size)
-                .bind("offset", offset)
+                .bind("size", pageable.getPageSize())
+                .bind("offset", getOffset(pageable))
                 .fetch()
                 .all()
                 .map((row) -> new StorageEntity(
                         (UUID) row.get("id"),
                         (Integer) row.get("rack"),
                         (LocalDate) row.get("accounting"),
-                        (Boolean) row.get("is_taken"),
+                        (BookState) row.get("status"),
                         (UUID) row.get("book_edition_id")
                         )
                 );
     }
 
 
-    public Flux<AuthorEntity> fetchAuthors(String sql, SearchAuthorDto searchAuthorDto, int size, int offset) {
-
+    public Flux<AuthorEntity> fetchAuthors(SearchAuthorDto searchAuthorDto, Pageable pageable) {
+       var sql = SqlQueryFactoryUtil.createAuthorQuery();
         return databaseClient.sql(sql)
                 .bind("name", searchAuthorDto.name())
-                .bind("size", size)
-                .bind("offset", offset)
+                .bind("size", pageable.getPageSize())
+                .bind("offset", getOffset(pageable))
                 .fetch()
                 .all()
                 .map((row) -> new AuthorEntity(
@@ -59,14 +59,14 @@ public class FetchQueries {
 
     }
 
-    public Flux<BookEntity> fetchBooks(String sql, SearchBookDto searchBookDto, int size, int offset) {
+    public Flux<BookEntity> fetchBooks(SearchBookDto searchBookDto, Pageable pageable) {
+        var sql = SqlQueryFactoryUtil.createBookQuery(pageable);
         return databaseClient.sql(sql)
-                .bind("name", searchBookDto.name())
-                .bind("udk", searchBookDto.udk())
-                .bind("author", searchBookDto.author())
-                .bind("size", size)
-
-                .bind("offset", offset)
+                .bind("name", searchBookDto.getName())
+                .bind("udk", searchBookDto.getUdk())
+                .bind("author", searchBookDto.getAuthor())
+                .bind("size", pageable.getPageSize())
+                .bind("offset",  getOffset(pageable))
                 .fetch()
                 .all()
                 .map((row) -> new BookEntity(
@@ -82,15 +82,17 @@ public class FetchQueries {
     }
 
 
+    public Flux<EditionEntity> fetchEdition(SearchEditionDto searchEditionDto, Pageable pageable) {
 
-    public Flux<EditionEntity> fetchEdition(String sql, SearchEditionDto searchEditionDto, int size, int offset) {
+        var sql = SqlQueryFactoryUtil.createEditionQuery();
+
         return databaseClient.sql(sql)
-                .bind("isbn", searchEditionDto.isbn())
-                .bind("number", searchEditionDto.number())
-                .bind("publication", searchEditionDto.publication())
-                .bind("name", searchEditionDto.name())
-                .bind("size", size)
-                .bind("offset", offset)
+                .bind("isbn", searchEditionDto.getIsbn())
+                .bind("number", searchEditionDto.getNumber())
+                .bind("publication", searchEditionDto.getPublication())
+                .bind("name", searchEditionDto.getName())
+                .bind("size", pageable.getPageSize())
+                .bind("offset", getOffset(pageable))
                 .fetch()
                 .all()
                 .map((row) -> new EditionEntity(
@@ -98,11 +100,17 @@ public class FetchQueries {
                                 (String) row.get("isbn"),
                                 (Integer) row.get("pages"),
                         (LocalDate) row.get("publication"),
-                        (short) row.get("number"),
+                        (Integer) row.get("number"),
                         (UUID) row.get("book_id")
                         )
 
                 );
 
     }
+
+    private int getOffset(Pageable pageable){
+        return SqlQueryFactoryUtil.calcOffset(pageable.getPageNumber(), pageable.getPageSize());
+    }
+
+
 }

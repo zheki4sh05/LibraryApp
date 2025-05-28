@@ -1,5 +1,6 @@
 package com.library.LibraryApp.application.entity;
 
+import com.library.LibraryApp.application.dto.BookState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,8 +27,8 @@ public class StorageEntity {
     @Column("accounting")
     private LocalDate accounting;
 
-    @Column("is_taken")
-    private Boolean taken;
+    @Column("status")
+    private BookState status;
 
     @Column("book_edition_id")
     private UUID edition;

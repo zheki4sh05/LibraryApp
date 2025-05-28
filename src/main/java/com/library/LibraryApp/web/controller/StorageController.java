@@ -6,8 +6,10 @@ import com.library.LibraryApp.application.dto.SearchStorageDto;
 import com.library.LibraryApp.application.dto.StorageDto;
 import com.library.LibraryApp.web.markers.AdvancedInfo;
 import com.library.LibraryApp.web.markers.BasicInfo;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/storage")
 @AllArgsConstructor
+@Slf4j
 public class StorageController {
 
     private final StorageMapper storageMapper;
@@ -35,10 +38,12 @@ public class StorageController {
 
     @GetMapping
     public Mono<Page<StorageDto>> fetch(
-            SearchStorageDto searchStorageDto,
+         @ModelAttribute @Valid SearchStorageDto searchStorageDto,
             Pageable pageable
             ){
-        return storageService.fetch(searchStorageDto,pageable).map(page -> page.map(storageMapper::toDto));
+        var result = storageService.fetch(searchStorageDto,pageable).map(page -> page.map(storageMapper::toDto));
+        log.info(searchStorageDto.toString());
+        return result;
 
     }
 

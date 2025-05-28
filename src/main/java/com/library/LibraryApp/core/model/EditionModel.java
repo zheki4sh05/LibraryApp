@@ -18,6 +18,6 @@ public class EditionModel {
     private int pages;
     private LocalDate publication;
     private short number;
-    private UUID bookId;
+    private UUID book;
 
 }

@@ -1,5 +1,6 @@
 package com.library.LibraryApp.core.model;
 
+import com.library.LibraryApp.application.dto.BookState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class StorageModel {
     private UUID id;
     private Integer rack;
     private LocalDate accounting;
-    private Boolean taken;
+    private BookState status;
     private UUID edition;
 
 }
