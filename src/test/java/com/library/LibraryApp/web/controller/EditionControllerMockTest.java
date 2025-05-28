@@ -119,7 +119,7 @@ class EditionControllerMockTest {
     @Test
     void getEditionById_WhenBlankId_ReturnsBadRequest() {
         webTestClient.get()
-                .uri("/edition/ ")
+                .uri("/edition/")
                 .exchange()
                 .expectStatus().is4xxClientError();
     }
@@ -216,7 +216,7 @@ class EditionControllerMockTest {
     @Test
     void deleteEdition_WhenBlankId_ReturnsBadRequest() {
         webTestClient.delete()
-                .uri("/edition/ ")
+                .uri("/edition/")
                 .exchange()
                 .expectStatus().is4xxClientError();
     }

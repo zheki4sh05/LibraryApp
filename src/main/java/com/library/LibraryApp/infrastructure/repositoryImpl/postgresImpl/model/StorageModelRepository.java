@@ -54,7 +54,19 @@ public class StorageModelRepository implements StorageRepository {
                 .map(storageMapper::toModel)
                 .collectList()
                 .flatMap(storageModels -> storageR2dbcRepository.count()
-                        .map(total->new PageImpl<>(storageModels, pageable, total))
+                        .map(total->
+                        {
+
+                            storageModels.forEach(item->{
+                                log.info(item.getStatus().name());
+                            });
+
+
+                            return new PageImpl<>(storageModels, pageable, total);
+                        }
+
+
+                        )
                 );
     }
 
