@@ -74,7 +74,9 @@ class StorageControllerTest extends AbstractIntegrationTest {
                 .get()
                 .uri(uriBuilder ->
                         uriBuilder.path(STORAGE_URI)
-                                .queryParam("mode", BookState.FREE)
+                                .queryParam("status", BookState.FREE)
+                                .queryParam("dateFrom", "1970-01-01")
+                                .queryParam("dateTo", LocalDate.now().toString())
                                 .queryParam("rack", 5)
                                 .queryParam("page", 0)
                                 .queryParam("size", 10)

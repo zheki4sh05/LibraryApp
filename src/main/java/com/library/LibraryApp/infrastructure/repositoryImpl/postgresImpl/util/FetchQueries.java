@@ -6,6 +6,7 @@ import com.library.LibraryApp.application.entity.BookEntity;
 import com.library.LibraryApp.application.entity.EditionEntity;
 import com.library.LibraryApp.application.entity.StorageEntity;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
@@ -16,28 +17,32 @@ import java.util.UUID;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class FetchQueries {
 
     private final DatabaseClient databaseClient;
 
     public Flux<StorageEntity> fetchStorages(SearchStorageDto searchStorageDto, Pageable pageable) {
         var sql = SqlQueryFactoryUtil.createStorageQuery();
+        log.info(searchStorageDto.toString());
         return databaseClient.sql(sql)
-                .bind("mode", searchStorageDto.mode())
-                .bind("rack", searchStorageDto.rack())
-                .bind("date_to", searchStorageDto.dateTo())
-                .bind("date_from", searchStorageDto.dateFrom())
+                .bind("status", searchStorageDto.getStatus())
+                .bind("rack", searchStorageDto.getRack())
+                .bind("date_to", searchStorageDto.getDateTo())
+                .bind("date_from", searchStorageDto.getDateFrom())
                 .bind("size", pageable.getPageSize())
                 .bind("offset", getOffset(pageable))
                 .fetch()
                 .all()
-                .map((row) -> new StorageEntity(
-                        (UUID) row.get("id"),
-                        (Integer) row.get("rack"),
-                        (LocalDate) row.get("accounting"),
-                        (BookState) row.get("status"),
-                        (UUID) row.get("book_edition_id")
-                        )
+                .map((row) -> {
+                           return new StorageEntity(
+                                    (UUID) row.get("id"),
+                                    (Integer) row.get("rack"),
+                                    (LocalDate) row.get("accounting"),
+                                    BookState.valueOf((String)row.get("status")),
+                                    (UUID) row.get("book_edition_id")
+                            );
+                        }
                 );
     }
 

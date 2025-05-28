@@ -37,7 +37,7 @@ public class BookController {
 
     @GetMapping
     public Mono<Page<BookDto>> fetch(
-          SearchBookDto searchBookDto,
+            SearchBookDto searchBookDto,
             Pageable pageable
     ){
         log.info(searchBookDto.toString());

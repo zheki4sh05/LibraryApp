@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -38,11 +39,12 @@ public class StorageController {
 
     @GetMapping
     public Mono<Page<StorageDto>> fetch(
-         @ModelAttribute @Valid SearchStorageDto searchStorageDto,
+         @Valid   SearchStorageDto searchStorageDto,
             Pageable pageable
             ){
         var result = storageService.fetch(searchStorageDto,pageable).map(page -> page.map(storageMapper::toDto));
         log.info(searchStorageDto.toString());
+
         return result;
 
     }

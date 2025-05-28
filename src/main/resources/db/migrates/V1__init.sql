@@ -1,5 +1,6 @@
 CREATE TYPE book_enum as enum ('FREE', 'BORROW');
 CREATE CAST (varchar AS book_enum) WITH INOUT AS IMPLICIT;
+CREATE CAST (book_enum AS varchar) WITH INOUT AS IMPLICIT;
 create table author
 (
     id uuid primary key default gen_random_uuid(),
@@ -24,7 +25,7 @@ create table edition
     isbn character(13) not null unique,
     pages integer not null,
     publication date not null,
-    number smallint not null,
+    number integer not null,
     book_id uuid not null,
     constraint book_fk foreign key (book_id)
     references book(id)

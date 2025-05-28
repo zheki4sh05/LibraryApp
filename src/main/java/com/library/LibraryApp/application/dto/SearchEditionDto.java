@@ -1,9 +1,6 @@
 package com.library.LibraryApp.application.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,11 +16,12 @@ import java.time.LocalDate;
 @Setter
 public class SearchEditionDto{
 
-       private  String isbn;
+       private  String isbn="";
 
-        private LocalDate publication;
-
-        private Integer number;
+       @PastOrPresent
+        private LocalDate publication=LocalDate.now();
+        @Min(1)
+        private Integer number=1;
 @Size(max = 100)
-        private  String name;
+        private  String name="";
 }

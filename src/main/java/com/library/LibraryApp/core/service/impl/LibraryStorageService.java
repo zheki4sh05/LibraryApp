@@ -7,6 +7,7 @@ import com.library.LibraryApp.core.service.StorageService;
 import com.library.LibraryApp.application.dto.SearchStorageDto;
 import com.library.LibraryApp.web.exceptions.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class LibraryStorageService implements StorageService {
 
     private final StorageRepository storageRepository;
@@ -48,19 +50,9 @@ public class LibraryStorageService implements StorageService {
 
     @Override
     public Mono<Page<StorageModel>> fetch(SearchStorageDto searchStorageDto, Pageable pageable) {
+        log.info(searchStorageDto.toString());
         return storageRepository.fetchStorages(searchStorageDto, pageable);
-//        if(searchStorageDto.dateTo().isBefore(searchStorageDto.dateFrom())){
-//            throw new BadRequestException();
-//        }
-//        int size = pageable.getPageSize();
-//        int offset = SqlQueryFactoryUtil.calcOffset(pageable.getPageNumber(), size);
-//        String sql = SqlQueryFactoryUtil.createStorageQuery();
-//        Flux<StorageEntity> storageFlux = fetchQueries.fetchStorages(sql, searchStorageDto, size, offset);
-//        return storageFlux.collectList()
-//                .zipWith(storageRepository.count())
-//                .map(tuple->
-//                     new PageImpl<>(tuple.getT1(), pageable, tuple.getT2())
-//                );
+
     }
 
     @Override

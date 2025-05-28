@@ -81,7 +81,7 @@ public class SqlQueryFactoryUtil {
     public static String createStorageQuery() {
         return """
                 select * from storage
-                where status = :mode
+                where status = :status
                 and accounting between :date_from and :date_to
                 and rack = :rack
                 limit :size offset :offset
