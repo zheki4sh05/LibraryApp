@@ -1,6 +1,8 @@
 package com.library.LibraryApp.web.controller;
 
 import com.library.LibraryApp.AbstractIntegrationTest;
+import com.library.LibraryApp.application.dto.CreateAuthorDto;
+import com.library.LibraryApp.application.dto.CreateBookDto;
 import com.library.LibraryApp.application.entity.BookEntity;
 import com.library.LibraryApp.application.dto.AuthorDto;
 import com.library.LibraryApp.application.dto.BookDto;
@@ -323,7 +325,7 @@ class BookModelControllerTest extends AbstractIntegrationTest {
 
         webTestClient
                 .put()
-                .uri(BOOK_URI)
+                .uri(BOOK_URI+"/"+updatedBook.id())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedBook)
@@ -378,7 +380,7 @@ class BookModelControllerTest extends AbstractIntegrationTest {
 
         webTestClient
                 .put()
-                .uri(BOOK_URI)
+                .uri(BOOK_URI+"/"+updatedBook.id())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedBook)
@@ -411,7 +413,7 @@ class BookModelControllerTest extends AbstractIntegrationTest {
 
         assertNotNull(currentAuthorDto);
 
-        BookDto createBookDto = new BookDto(null, "book", "123.45.678", currentAuthorDto.getId());
+        CreateBookDto createBookDto = new CreateBookDto( "book", "123.45.678", currentAuthorDto.getId());
 
         var result2 =   webTestClient
                 .post()
@@ -431,7 +433,7 @@ class BookModelControllerTest extends AbstractIntegrationTest {
 
         webTestClient
                 .put()
-                .uri(BOOK_URI)
+                .uri(BOOK_URI+"/"+updatedBook.id().toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(updatedBook)

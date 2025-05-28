@@ -1,18 +1,16 @@
 package com.library.LibraryApp.web.controller;
 
-import com.library.LibraryApp.application.mapper.EditionMapper;
-import com.library.LibraryApp.core.service.EditionService;
+import com.library.LibraryApp.application.dto.CreateEditionDto;
 import com.library.LibraryApp.application.dto.EditionDto;
 import com.library.LibraryApp.application.dto.SearchEditionDto;
-import com.library.LibraryApp.web.markers.AdvancedInfo;
-import com.library.LibraryApp.web.markers.BasicInfo;
+import com.library.LibraryApp.application.mapper.EditionMapper;
+import com.library.LibraryApp.core.service.EditionService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -29,8 +27,8 @@ public class EditionController {
 
     @PostMapping
     public Mono<EditionDto> createEdition(
-            @RequestBody
-            @Validated(BasicInfo.class) EditionDto editionDto
+            @Valid @RequestBody
+            CreateEditionDto editionDto
     ) {
 
      return editionService.create(editionMapper.toNewModel(editionDto)).map(editionMapper::toDto);
@@ -47,14 +45,14 @@ public class EditionController {
            @Valid SearchEditionDto searchEditionDto,
         Pageable pageable
     ){
-        log.info(searchEditionDto.toString());
         return editionService.fetch(searchEditionDto, pageable).map(page -> page.map(editionMapper::toDto));
     };
 
-    @PutMapping
-    public Mono<EditionDto> updateEdition(@RequestBody
-                                              @Validated(AdvancedInfo.class) EditionDto editionDto) {
-        return editionService.update(editionMapper.toModel(editionDto)).map(editionMapper::toDto);
+    @PutMapping("{id}")
+    public Mono<EditionDto> updateEdition(
+            @PathVariable UUID id,
+            @Valid @RequestBody CreateEditionDto editionDto) {
+        return editionService.update(editionMapper.toModel(editionDto,id)).map(editionMapper::toDto);
     }
 
     @DeleteMapping("/{id}")

@@ -146,8 +146,8 @@ class AuthorControllerTest extends AbstractIntegrationTest {
         currentAuthorDto.setName(newName);
 
                 webTestClient
-                .patch()
-                .uri(AUTHOR_URI)
+                .put()
+                .uri(AUTHOR_URI+"/"+currentAuthorDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(currentAuthorDto)
@@ -176,8 +176,8 @@ class AuthorControllerTest extends AbstractIntegrationTest {
                 .name("author")
                 .build();
         webTestClient
-                .patch()
-                .uri(AUTHOR_URI)
+                .put()
+                .uri(AUTHOR_URI+"/"+currentAuthorDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(currentAuthorDto)

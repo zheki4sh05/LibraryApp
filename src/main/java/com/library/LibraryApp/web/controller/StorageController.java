@@ -1,5 +1,6 @@
 package com.library.LibraryApp.web.controller;
 
+import com.library.LibraryApp.application.dto.CreateStorageDto;
 import com.library.LibraryApp.application.mapper.StorageMapper;
 import com.library.LibraryApp.core.service.StorageService;
 import com.library.LibraryApp.application.dto.SearchStorageDto;
@@ -30,8 +31,7 @@ public class StorageController {
 
     @PostMapping
     public Mono<StorageDto> createStorage(
-            @RequestBody
-            @Validated(BasicInfo.class) StorageDto storageDto
+           @Valid @RequestBody CreateStorageDto storageDto
     ){
         return storageService.create(storageMapper.toNewModel(storageDto)).map(storageMapper::toDto);
 
@@ -66,12 +66,12 @@ public class StorageController {
 
     }
 
-    @PatchMapping
+    @PutMapping("/{id}")
     public Mono<StorageDto>  updateStorage(
-            @RequestBody
-            @Validated(AdvancedInfo.class) StorageDto storageDto
+            @PathVariable UUID id,
+          @Valid  @RequestBody CreateStorageDto storageDto
     ){
-        return storageService.update(storageMapper.toModel(storageDto)).map(storageMapper::toDto);
+        return storageService.update(storageMapper.toModel(storageDto,id)).map(storageMapper::toDto);
 
     }
 

@@ -1,21 +1,22 @@
 package com.library.LibraryApp.application.dto;
 
-
 import com.library.LibraryApp.web.markers.AdvancedInfo;
 import com.library.LibraryApp.web.markers.BasicInfo;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @Builder
-public class AuthorDto {
-    private UUID id;
+public class CreateAuthorDto {
+
+    @NotBlank(
+            message = "Поле с именем автора не может быть пустым")
+    @Size(min = 4, max = 100)
     private String name;
 }

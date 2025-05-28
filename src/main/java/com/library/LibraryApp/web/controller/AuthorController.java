@@ -1,6 +1,7 @@
 package com.library.LibraryApp.web.controller;
 
 
+import com.library.LibraryApp.application.dto.CreateAuthorDto;
 import com.library.LibraryApp.application.mapper.AuthorMapper;
 import com.library.LibraryApp.core.service.AuthorService;
 import com.library.LibraryApp.core.util.RegexPatterns;
@@ -31,13 +32,13 @@ public class AuthorController {
 
     @PostMapping
     Mono<AuthorDto> createAuthor(
-            @RequestBody @Validated(BasicInfo.class) AuthorDto createAuthorDto){
+            @Valid   @RequestBody  CreateAuthorDto createAuthorDto){
         return authorService.create(authorMapper.toNewModel(createAuthorDto)).map(authorMapper::toDto);
     }
 
     @GetMapping
     Mono<Page<AuthorDto>> fetch(
-       @ModelAttribute  @Valid SearchAuthorDto searchAuthorDto,
+        @Valid SearchAuthorDto searchAuthorDto,
             Pageable pageable
     ){
 
@@ -52,11 +53,12 @@ public class AuthorController {
         return authorService.findById(id).map(authorMapper::toDto);
     }
 
-    @PatchMapping
+    @PutMapping("/{id}")
     Mono<AuthorDto> update(
-            @RequestBody
-            @Validated(AdvancedInfo.class) AuthorDto authorDto){
-        return authorService.update(authorMapper.toModel(authorDto)).map(authorMapper::toDto);
+            @PathVariable UUID id,
+           @Valid @RequestBody
+             CreateAuthorDto authorDto){
+        return authorService.update(authorMapper.toModel(authorDto,id)).map(authorMapper::toDto);
     }
 
     @DeleteMapping("/{id}")

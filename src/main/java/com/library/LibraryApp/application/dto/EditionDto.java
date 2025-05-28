@@ -13,26 +13,22 @@ import java.util.UUID;
 public record EditionDto(
 
 
-        @NotNull(groups = {AdvancedInfo.class})
+
         UUID id,
 
-        @Pattern(regexp = RegexPatterns.ISBN, groups = {AdvancedInfo.class, BasicInfo.class})
+
         String isbn,
 
-        @Min(value = 1, groups = {AdvancedInfo.class, BasicInfo.class})
-        @Max(value = 1500, groups = {AdvancedInfo.class, BasicInfo.class})
-        @NotNull
+
         Integer pages,
 
-        @Past(groups = {AdvancedInfo.class, BasicInfo.class})
-        @DateTimeFormat(pattern = "yyyy-mm-dd")
+
         LocalDate publication,
 
-        @Min(value = 1, groups = {AdvancedInfo.class, BasicInfo.class})
-        @Max(value = 20, groups = {AdvancedInfo.class, BasicInfo.class})
+
         Integer number,
 
-        @NotNull(groups = {AdvancedInfo.class, BasicInfo.class})
+
         UUID book
 
 ) {

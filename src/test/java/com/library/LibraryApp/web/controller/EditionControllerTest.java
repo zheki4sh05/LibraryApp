@@ -1,6 +1,7 @@
 package com.library.LibraryApp.web.controller;
 
 import com.library.LibraryApp.AbstractIntegrationTest;
+import com.library.LibraryApp.application.dto.CreateEditionDto;
 import com.library.LibraryApp.application.entity.EditionEntity;
 import com.library.LibraryApp.application.dto.EditionDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,10 +131,10 @@ class EditionControllerTest extends AbstractIntegrationTest {
     @Test
     public void update_edition_200(){
         var edition = createEdition();
-        EditionDto edition1 = new EditionDto(edition.id(), "9781123456789", edition.pages(), edition.publication(), edition.number(), edition.book());
+        CreateEditionDto edition1 = new CreateEditionDto("9781123456789", edition.pages(), edition.publication(), edition.number(), edition.book());
        var result =  webTestClient
                 .put()
-                .uri(EDITION_URI)
+                .uri(EDITION_URI+"/"+edition.id())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(edition1)
@@ -157,10 +158,10 @@ class EditionControllerTest extends AbstractIntegrationTest {
     public void update_not_existed_edition_404(){
         var author = createAuthor();
         var book = createBookDto(author.getId());
-        EditionDto edition1 = new EditionDto(UUID.randomUUID(), "9781123456789", 1, LocalDate.parse("1970-09-09"), 1, book.id());
+        CreateEditionDto edition1 = new CreateEditionDto( "9781123456789", 1, LocalDate.parse("1970-09-09"), 1, book.id());
       webTestClient
                 .put()
-                .uri(EDITION_URI)
+                .uri(EDITION_URI+"/"+UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(edition1)
@@ -173,10 +174,10 @@ class EditionControllerTest extends AbstractIntegrationTest {
     @Test
     public void update_with_not_existed_book_404(){
         var edition = createEdition();
-        EditionDto edition1 = new EditionDto(edition.id(), "9781123456789", 1, LocalDate.parse("1970-09-09"), 1, UUID.randomUUID());
+        CreateEditionDto edition1 = new CreateEditionDto("9781123456789", 1, LocalDate.parse("1970-09-09"), 1, UUID.randomUUID());
         webTestClient
                 .put()
-                .uri(EDITION_URI)
+                .uri(EDITION_URI+"/"+edition.id())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(edition1)

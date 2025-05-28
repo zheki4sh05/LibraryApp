@@ -1,5 +1,6 @@
 package com.library.LibraryApp.web.controller;
 
+import com.library.LibraryApp.application.dto.CreateBookDto;
 import com.library.LibraryApp.application.mapper.BookMapper;
 import com.library.LibraryApp.core.service.BookService;
 import com.library.LibraryApp.application.dto.BookDto;
@@ -28,8 +29,9 @@ public class BookController {
 
     @PostMapping
     public Mono<BookDto> save
-            (@RequestBody
-             @Validated(BasicInfo.class) BookDto bookDto
+            (
+                  @Valid  @RequestBody
+                  CreateBookDto bookDto
             ) {
 
        return bookService.save(bookMapper.toNewModel(bookDto)).map(bookMapper::toDto);
@@ -40,17 +42,18 @@ public class BookController {
             SearchBookDto searchBookDto,
             Pageable pageable
     ){
-        log.info(searchBookDto.toString());
         return bookService.fetch(searchBookDto,pageable)
                 .map(page -> page.map(bookMapper::toDto));
 
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public Mono<BookDto> update
-            (@RequestBody
-             @Validated(AdvancedInfo.class) BookDto book) {
-          return bookService.update(bookMapper.toModel(book)).map(bookMapper::toDto);
+            (
+                    @PathVariable UUID id,
+                 @Valid   @RequestBody
+              BookDto book) {
+          return bookService.update(bookMapper.toModel(book, id)).map(bookMapper::toDto);
     }
 
     @DeleteMapping("/{id}")

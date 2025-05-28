@@ -12,20 +12,19 @@ import java.util.UUID;
 public record StorageDto(
 
 
-    @NotNull(groups = {AdvancedInfo.class})
+
     UUID id,
 
-    @Min(value = 1, groups = {AdvancedInfo.class, BasicInfo.class} )
-    @Max(value = 100, groups = {AdvancedInfo.class, BasicInfo.class})
+
     Integer rack,
 
-   @PastOrPresent(groups = {AdvancedInfo.class, BasicInfo.class})
+
     LocalDate accounting,
 
-    @NotNull(groups = {AdvancedInfo.class, BasicInfo.class})
+
     BookState status,
 
-    @NotNull(groups = {AdvancedInfo.class, BasicInfo.class})
+
     UUID edition
 ) {
 }

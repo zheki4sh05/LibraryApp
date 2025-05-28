@@ -170,8 +170,8 @@ class StorageControllerTest extends AbstractIntegrationTest {
         var storage = createStorage();
         StorageDto storageDto = new StorageDto(storage.id(), 2, LocalDate.now(), BookState.FREE, storage.edition());
         var savedStorage =  webTestClient
-                .patch()
-                .uri(STORAGE_URI)
+                .put()
+                .uri(STORAGE_URI+"/"+storage.id())
                 .bodyValue(storageDto)
                 .exchange()
                 .expectStatus().isOk()

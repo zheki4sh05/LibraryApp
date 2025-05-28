@@ -1,5 +1,6 @@
 package com.library.LibraryApp.web.controller;
 
+import com.library.LibraryApp.application.dto.CreateEditionDto;
 import com.library.LibraryApp.application.dto.EditionDto;
 import com.library.LibraryApp.application.mapper.EditionMapper;
 import com.library.LibraryApp.core.model.EditionModel;
@@ -56,13 +57,12 @@ class EditionControllerMockTest {
 
     @Test
     void createEdition_WhenInvalidIsbn_ReturnsBadRequest() {
-        EditionDto invalidDto = new EditionDto(
-                null,
+        CreateEditionDto invalidDto = new CreateEditionDto(
                 "INVALID-ISBN",
                 200,
                 LocalDate.now().minusDays(1),
                 1,
-                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479") // Оборачиваем в UUID.fromString()
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
         webTestClient.post()
@@ -75,8 +75,7 @@ class EditionControllerMockTest {
 
     @Test
     void createEdition_WhenPagesOutOfRange_ReturnsBadRequest() {
-        EditionDto invalidDto = new EditionDto(
-                null,
+        CreateEditionDto invalidDto = new CreateEditionDto(
                 "978-3-16-148410-0",
                 0,
                 LocalDate.now().minusDays(1),
@@ -122,7 +121,7 @@ class EditionControllerMockTest {
         webTestClient.get()
                 .uri("/edition/ ")
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().is4xxClientError();
     }
 
     @Test
@@ -157,20 +156,20 @@ class EditionControllerMockTest {
 
     @Test
     void updateEdition_WhenValidDto_ReturnsOk() {
-        EditionDto validDto = new EditionDto(
-                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479"), // Оборачиваем в UUID
+        CreateEditionDto validDto = new CreateEditionDto(
+
                 "9783161484100",
                 200,
                 LocalDate.now().minusDays(1),
                 1,
-                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479") // Оборачиваем в UUID
+                UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")
         );
 
         when(editionService.update(any())).thenReturn(Mono.just(new EditionModel()));
         when(editionMapper.toDto(any())).thenReturn(new EditionDto(null, "", 1, LocalDate.now(), 1, UUID.randomUUID()));
 
         webTestClient.put()
-                .uri("/edition")
+                .uri("/edition"+"/"+ "f47ac10b-58cc-4372-a567-0e02b2c3d479")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(validDto)
                 .exchange()
@@ -180,8 +179,7 @@ class EditionControllerMockTest {
 
     @Test
     void updateEdition_WhenMissingId_ReturnsBadRequest() {
-        EditionDto invalidDto = new EditionDto(
-                null,
+        CreateEditionDto invalidDto = new CreateEditionDto(
                 "9783161484100",
                 200,
                 LocalDate.now().minusDays(1),
@@ -190,11 +188,11 @@ class EditionControllerMockTest {
         );
 
         webTestClient.put()
-                .uri("/edition")
+                .uri("/edition ")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(invalidDto)
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().is4xxClientError();
     }
 
     @Test
@@ -220,7 +218,7 @@ class EditionControllerMockTest {
         webTestClient.delete()
                 .uri("/edition/ ")
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().is4xxClientError();
     }
 
 
