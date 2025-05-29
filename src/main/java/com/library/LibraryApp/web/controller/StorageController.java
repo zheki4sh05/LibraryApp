@@ -8,7 +8,6 @@ import com.library.LibraryApp.core.service.StorageService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/storage")
 @AllArgsConstructor
-@Slf4j
 public class StorageController {
 
     private final StorageMapper storageMapper;
@@ -38,10 +36,8 @@ public class StorageController {
          @Valid   SearchStorageDto searchStorageDto,
             Pageable pageable
             ){
-        var result = storageService.fetch(searchStorageDto,pageable).map(page -> page.map(storageMapper::toDto));
-        log.info(searchStorageDto.toString());
 
-        return result;
+        return storageService.fetch(searchStorageDto,pageable).map(page -> page.map(storageMapper::toDto));
 
     }
 
@@ -70,10 +66,4 @@ public class StorageController {
         return storageService.update(storageMapper.toModel(storageDto,id)).map(storageMapper::toDto);
 
     }
-
-
-
-
-
-
 }

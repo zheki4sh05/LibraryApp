@@ -1,8 +1,6 @@
 package com.library.LibraryApp.application.dto;
 
 import com.library.LibraryApp.core.util.RegexPatterns;
-import com.library.LibraryApp.web.markers.AdvancedInfo;
-import com.library.LibraryApp.web.markers.BasicInfo;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

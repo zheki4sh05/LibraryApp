@@ -7,6 +7,11 @@ spring:
     url: r2dbc:postgresql://localhost:5432/postgres
     username: postgres
     password: 123456789
+  database:
+    hostname: localhost
+    port: 5432
+    name: postgres
+    enumName: book_enum
   flyway:
     url: jdbc:postgresql://localhost:5432/postgres
     enabled: true

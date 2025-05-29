@@ -4,11 +4,9 @@ import com.library.LibraryApp.application.dto.BookDto;
 import com.library.LibraryApp.application.dto.CreateBookDto;
 import com.library.LibraryApp.application.dto.SearchBookDto;
 import com.library.LibraryApp.application.mapper.BookMapper;
-import com.library.LibraryApp.core.model.StorageModel;
 import com.library.LibraryApp.core.service.BookService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +17,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/book")
 @AllArgsConstructor
-@Slf4j
 public class BookController {
 
     private final BookService bookService;

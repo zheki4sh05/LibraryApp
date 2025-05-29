@@ -1,22 +1,16 @@
 package com.library.LibraryApp.web.controller;
 
 
+import com.library.LibraryApp.application.dto.AuthorDto;
 import com.library.LibraryApp.application.dto.CreateAuthorDto;
+import com.library.LibraryApp.application.dto.SearchAuthorDto;
 import com.library.LibraryApp.application.mapper.AuthorMapper;
 import com.library.LibraryApp.core.service.AuthorService;
-import com.library.LibraryApp.core.util.RegexPatterns;
-import com.library.LibraryApp.application.dto.AuthorDto;
-import com.library.LibraryApp.application.dto.SearchAuthorDto;
-import com.library.LibraryApp.web.markers.AdvancedInfo;
-import com.library.LibraryApp.web.markers.BasicInfo;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 

@@ -1,7 +1,5 @@
 package com.library.LibraryApp.application.dto;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public enum BookState {
     FREE("FREE"),
     BORROW("BORROW");

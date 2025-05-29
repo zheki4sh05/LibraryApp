@@ -15,24 +15,5 @@ import java.util.*;
 @Repository
 public interface BookR2dbcRepo extends R2dbcRepository<BookEntity, UUID> {
 
-    @Query("""
-    select * from book where catalog_fk = :catalogId and is_taken=false limit 1
-    """)
-    Mono<BookEntity> findFirstWithFreeBook(@Param("catalogId") Long isbn);
-
-    @Query("""
-    select * from book where id = :id
-    """)
-    Mono<BookEntity> findByNumber(@Param("id") UUID id);
-
-    @Query("""
-    select * from book where catalog_fk = :catalogId and is_taken=true
-    """)
-    Flux<BookEntity> findBorrowBook(Long catalogId);
-
-    @Query("""
-    select * from book where catalog_fk = :catalogId and is_taken=false
-    """)
-    Flux<BookEntity> findFreeBooks(Long catalogId);
 }
 

@@ -1,6 +1,7 @@
-CREATE TYPE book_enum as enum ('FREE', 'BORROW');
-CREATE CAST (varchar AS book_enum) WITH INOUT AS IMPLICIT;
-CREATE CAST (book_enum AS varchar) WITH INOUT AS IMPLICIT;
+create type book_enum as enum ('FREE', 'BORROW');
+create cast (varchar as book_enum) with inout as implicit;
+
+
 create table author
 (
     id uuid primary key default gen_random_uuid(),

@@ -15,14 +15,6 @@ import java.util.UUID;
 public interface StorageR2dbcRepository extends R2dbcRepository<StorageEntity, UUID> {
 
     @Query("""
-            
-            select * from storage where book_id
-            
-            """)
-    Mono<StorageEntity> findByBookId(String id);
-
-
-    @Query("""
             select * from storage s
             join edition e on s.book_edition_id = :id and e.id = :id
             """)

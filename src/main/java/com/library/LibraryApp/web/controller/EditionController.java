@@ -8,7 +8,6 @@ import com.library.LibraryApp.core.service.EditionService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/edition")
 @AllArgsConstructor
-@Slf4j
 public class EditionController {
 
     private final EditionService editionService;
@@ -45,7 +43,6 @@ public class EditionController {
            @Valid SearchEditionDto searchEditionDto,
         Pageable pageable
     ){
-        log.info(searchEditionDto.toString());
         return editionService.fetch(searchEditionDto, pageable).map(page -> page.map(editionMapper::toDto));
     };
 

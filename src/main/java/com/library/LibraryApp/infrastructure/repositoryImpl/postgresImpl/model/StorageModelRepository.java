@@ -49,23 +49,12 @@ public class StorageModelRepository implements StorageRepository {
 
     @Override
     public Mono<Page<StorageModel>> fetchStorages(SearchStorageDto searchStorageDto, Pageable pageable) {
-        log.info(searchStorageDto.toString());
         return fetchQueries.fetchStorages(searchStorageDto, pageable)
                 .map(storageMapper::toModel)
                 .collectList()
                 .flatMap(storageModels -> storageR2dbcRepository.count()
                         .map(total->
-                        {
-
-                            storageModels.forEach(item->{
-                                log.info(item.getStatus().name());
-                            });
-
-
-                            return new PageImpl<>(storageModels, pageable, total);
-                        }
-
-
+                                new PageImpl<>(storageModels, pageable, total)
                         )
                 );
     }

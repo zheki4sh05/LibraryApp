@@ -1,7 +1,5 @@
 package com.library.LibraryApp.application.dto;
 
-import com.library.LibraryApp.web.markers.AdvancedInfo;
-import com.library.LibraryApp.web.markers.BasicInfo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
