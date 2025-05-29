@@ -10,8 +10,7 @@ import org.springframework.data.convert.WritingConverter;
 public class BookStateWritingConverter implements Converter<BookState, String> {
     @Override
     public String convert(BookState source) {
-
-        return source.name();
+        return source.getValue();
     }
 }
 

@@ -5,6 +5,7 @@ import com.library.LibraryApp.application.entity.AuthorEntity;
 import com.library.LibraryApp.application.entity.BookEntity;
 import com.library.LibraryApp.application.entity.EditionEntity;
 import com.library.LibraryApp.application.entity.StorageEntity;
+import io.r2dbc.spi.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +25,8 @@ public class FetchQueries {
 
     public Flux<StorageEntity> fetchStorages(SearchStorageDto searchStorageDto, Pageable pageable) {
         var sql = SqlQueryFactoryUtil.createStorageQuery();
-        log.info(searchStorageDto.toString());
         return databaseClient.sql(sql)
-                .bind("status", searchStorageDto.getStatus())
+                .bind("status", Parameters.in(searchStorageDto.getStatus().name()))
                 .bind("rack", searchStorageDto.getRack())
                 .bind("date_to", searchStorageDto.getDateTo())
                 .bind("date_from", searchStorageDto.getDateFrom())

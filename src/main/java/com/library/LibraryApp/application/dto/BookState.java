@@ -12,7 +12,6 @@ public enum BookState {
         this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
         return value;
     }

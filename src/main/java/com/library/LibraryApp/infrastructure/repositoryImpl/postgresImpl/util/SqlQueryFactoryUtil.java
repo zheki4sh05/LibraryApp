@@ -9,13 +9,9 @@ import java.util.stream.Collectors;
 public class SqlQueryFactoryUtil {
 
 
-    public static int calcOffset(Integer page, Integer size){
+    public static int calcOffset(Integer page, Integer size) {
         return (page) * size;
     }
-    public static int calcTotalPages(Long total ,Integer size){
-        return (int) Math.ceil((double) total / size);
-    }
-
 
     public static String createAuthorQuery() {
 
@@ -37,12 +33,12 @@ public class SqlQueryFactoryUtil {
                 .collect(Collectors.joining(", "));
 
         String query = """
-            select b.* from book as b
-            join author as a on a.id = b.author_id
-            where (:udk = '' or b.udk = :udk)
-            and (:name = '' or b.name = :name)
-            and (:author = '' or a.name = :author)
-            """;
+                select b.* from book as b
+                join author as a on a.id = b.author_id
+                where (:udk = '' or b.udk = :udk)
+                and (:name = '' or b.name = :name)
+                and (:author = '' or a.name = :author)
+                """;
 
         if (!orderByClause.isEmpty()) {
             query += " order by " + orderByClause;
@@ -52,18 +48,6 @@ public class SqlQueryFactoryUtil {
 
         return query;
     }
-    public static String createBookQuery() {
-        return """
-                select b.* from book as b
-                join author a on a.id = b.author_id
-                where (:udk = '' or b.udk = :udk)
-                and (:name = '' or b.name like :name)
-                and (:author = '' or a.name like :author)
-                limit :size offset :offset
-                """;
-
-    }
-
 
     public static String createEditionQuery() {
         return """
@@ -81,13 +65,11 @@ public class SqlQueryFactoryUtil {
     public static String createStorageQuery() {
         return """
                 select * from storage
-                where status = :status
+                where status = CAST(:status AS book_enum)
                 and accounting between :date_from and :date_to
                 and rack = :rack
                 limit :size offset :offset
                 """;
-
-
     }
 
     private static void validateSort(Pageable pageable, List<String> allowedSortFields) {
