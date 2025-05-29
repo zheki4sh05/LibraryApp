@@ -47,4 +47,9 @@ public class BookModelRepository implements BookRepository {
     public Mono<BookModel> findById(UUID id) {
         return bookR2dbcRepo.findById(id).map(bookMapper::toModel);
     }
+
+    @Override
+    public Mono<Long> countByAuthor(UUID id) {
+        return bookR2dbcRepo.countByAuthor(id).count();
+    }
 }

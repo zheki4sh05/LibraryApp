@@ -4,9 +4,12 @@ package com.library.LibraryApp.core.service.impl;
 import com.library.LibraryApp.application.dto.SearchAuthorDto;
 import com.library.LibraryApp.core.model.AuthorModel;
 import com.library.LibraryApp.core.repository.AuthorRepository;
+import com.library.LibraryApp.core.repository.BookRepository;
 import com.library.LibraryApp.core.service.AuthorService;
+import com.library.LibraryApp.web.exceptions.ChildConstraintException;
 import com.library.LibraryApp.web.exceptions.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,9 +19,11 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class BookAuthorService implements AuthorService {
 
     private final AuthorRepository authorRepository;
+    private final BookRepository bookRepository;
 
     @Override
     public Mono<AuthorModel> create(AuthorModel newAuthor) {
@@ -47,7 +52,15 @@ public class BookAuthorService implements AuthorService {
     public Mono<UUID> deleteById(UUID id) {
         return authorRepository.findById(id)
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти для удаления автора по id "+id)))
-                .flatMap(authorRepository::delete)
+                .flatMap(authorModel ->  bookRepository.countByAuthor(authorModel.getId())
+                        .flatMap(count->{
+                            if(count>0){
+                                throw new ChildConstraintException("У автора с id "+id+" есть связанные сущности: "+count);
+                            }else{
+                                return authorRepository.delete(authorModel);
+                            }
+                        })
+                )
                 .thenReturn(id);
     }
 }

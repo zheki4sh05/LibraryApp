@@ -1,8 +1,10 @@
 package com.library.LibraryApp.web.controller;
 
 import com.library.LibraryApp.AbstractIntegrationTest;
+import com.library.LibraryApp.application.dto.CreateBookDto;
 import com.library.LibraryApp.application.entity.AuthorEntity;
 import com.library.LibraryApp.application.dto.AuthorDto;
+import com.library.LibraryApp.application.entity.BookEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -239,6 +241,7 @@ class AuthorControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void delete_by_id_existed_author_200(){
+
         AuthorDto authorDto = AuthorDto.builder()
                 .name("author2")
                 .build();
@@ -285,6 +288,43 @@ class AuthorControllerTest extends AbstractIntegrationTest {
                 .expectStatus().isEqualTo(404)
                 .expectBody(String.class)
                 .returnResult();
+
+    }
+
+    @Test
+    public void delete_author_with_existed_book_409(){
+        AuthorDto authorDto = AuthorDto.builder()
+                .name("author2")
+                .build();
+        var result = webTestClient
+                .post()
+                .uri(AUTHOR_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(authorDto)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(AuthorDto.class)
+                .returnResult();
+
+        var currentAuthorDto = result.getResponseBody();
+
+        assertNotNull(currentAuthorDto);
+
+        BookEntity book = new BookEntity("book", "27406569652230375886", currentAuthorDto.getId());
+        bookR2dbcRepo.save(book).subscribe();
+
+        webTestClient
+                .delete()
+                .uri(AUTHOR_URI+"/"+currentAuthorDto.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isEqualTo(409)
+                .expectBody(String.class)
+                .returnResult();
+
+
 
     }
 

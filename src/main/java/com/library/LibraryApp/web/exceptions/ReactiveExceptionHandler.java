@@ -34,6 +34,13 @@ public class ReactiveExceptionHandler {
                 body(ex.getMessage()));
     }
 
+    @ExceptionHandler(ChildConstraintException.class)
+    public Mono<ResponseEntity<String>> handleResourceConstraintException(ChildConstraintException ex, ServerWebExchange exchange) {
+        return Mono.just(ResponseEntity.status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON).
+                body(ex.getMessage()));
+    }
+
     @ExceptionHandler(TransientDataAccessResourceException.class)
     public Mono<ResponseEntity<String>> handleResourceNotFoundException(TransientDataAccessResourceException ex, ServerWebExchange exchange) {
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND)

@@ -24,7 +24,7 @@ server:
 logging:
   level:
     org.springframework.r2dbc.core: INFO
-    io.r2dbc.postgresql.QUERY: INFO
+    io.r2dbc.postgresql.QUERY: DEBUG
     io.r2dbc.postgresql: INFO
 
 

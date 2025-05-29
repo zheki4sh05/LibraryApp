@@ -18,7 +18,7 @@ public interface BookRepository  {
     Mono<BookModel> save(BookModel newBook);
     Mono<Page<BookModel>> fetchBooks(SearchBookDto searchBookDto, Pageable pageable);
     Mono<Void> delete(BookModel book);
-
     Mono<BookModel> findById(UUID id);
+    Mono<Long> countByAuthor(UUID id);
 }
 
