@@ -1,6 +1,7 @@
 package com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.model;
 
 import com.library.LibraryApp.application.dto.SearchBookDto;
+import com.library.LibraryApp.application.entity.*;
 import com.library.LibraryApp.application.mapper.BookMapper;
 import com.library.LibraryApp.core.model.BookModel;
 import com.library.LibraryApp.core.repository.BookRepository;
@@ -50,6 +51,7 @@ public class BookModelRepository implements BookRepository {
 
     @Override
     public Mono<Long> countByAuthor(UUID id) {
-        return bookR2dbcRepo.countByAuthor(id).count();
+        return bookR2dbcRepo.countByAuthor(id).map(ProjectionCount::getCount);
+
     }
 }

@@ -55,7 +55,7 @@ public class BookAuthorService implements AuthorService {
                 .flatMap(authorModel ->  bookRepository.countByAuthor(authorModel.getId())
                         .flatMap(count->{
                             if(count>0){
-                                throw new ChildConstraintException("У автора с id "+id+" есть связанные сущности: "+count);
+                                return Mono.error(new ChildConstraintException("У автора с id "+id+" есть связанные сущности: "+count));
                             }else{
                                 return authorRepository.delete(authorModel);
                             }

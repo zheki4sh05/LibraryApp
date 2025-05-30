@@ -11,6 +11,6 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectionId {
-    private UUID id;
+public class ProjectionCount {
+    private Long count;
 }
