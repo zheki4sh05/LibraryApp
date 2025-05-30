@@ -7,6 +7,7 @@ import com.library.LibraryApp.core.repository.AuthorRepository;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.AuthorR2dbcRepo;
 import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class AuthorModelRepository implements AuthorRepository {
 
     private final AuthorR2dbcRepo authorR2dbcRepo;
@@ -41,7 +43,8 @@ public class AuthorModelRepository implements AuthorRepository {
 
     @Override
     public Mono<Page<AuthorModel>> fetchAuthors(SearchAuthorDto searchAuthorDto, Pageable pageable) {
-        return fetchQueries.fetchAuthors(searchAuthorDto, pageable)
+        log.info(searchAuthorDto.name());
+        return authorR2dbcRepo.findByNameContainingOrIsEmpty(searchAuthorDto.name(), pageable)
                 .map(authorMapper::toModel)
                 .collectList()
                 .flatMap(authorModels -> authorR2dbcRepo.count()
