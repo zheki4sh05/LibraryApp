@@ -41,6 +41,7 @@ public class CustomR2dbcConfiguration extends AbstractR2dbcConfiguration {
     private String bookEnumTypeName;
 
     @Override
+    @Bean
     public ConnectionFactory connectionFactory() {
         return new PostgresqlConnectionFactory(
                 PostgresqlConnectionConfiguration.builder()
@@ -55,6 +56,7 @@ public class CustomR2dbcConfiguration extends AbstractR2dbcConfiguration {
     }
 
     @Override
+    @Bean
     public R2dbcCustomConversions r2dbcCustomConversions() {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new BookStateReadingConverter());

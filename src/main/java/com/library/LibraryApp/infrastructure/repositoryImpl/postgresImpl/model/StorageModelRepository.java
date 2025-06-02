@@ -1,21 +1,17 @@
 package com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.model;
 
-import com.library.LibraryApp.application.dto.SearchStorageDto;
-import com.library.LibraryApp.application.mapper.StorageMapper;
-import com.library.LibraryApp.core.model.StorageModel;
-import com.library.LibraryApp.core.repository.StorageRepository;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.StorageR2dbcRepository;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import com.library.LibraryApp.application.dto.*;
+import com.library.LibraryApp.application.mapper.*;
+import com.library.LibraryApp.core.model.*;
+import com.library.LibraryApp.core.repository.*;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.*;
+import lombok.*;
+import lombok.extern.slf4j.*;
+import org.springframework.data.domain.*;
+import org.springframework.stereotype.*;
+import reactor.core.publisher.*;
 
-import java.util.UUID;
+import java.util.*;
 
 @AllArgsConstructor
 @Component
@@ -24,7 +20,6 @@ public class StorageModelRepository implements StorageRepository {
 
     private final StorageR2dbcRepository storageR2dbcRepository;
     private StorageMapper storageMapper;
-    private final FetchQueries fetchQueries;
 
 
     @Override
@@ -49,7 +44,14 @@ public class StorageModelRepository implements StorageRepository {
 
     @Override
     public Mono<Page<StorageModel>> fetchStorages(SearchStorageDto searchStorageDto, Pageable pageable) {
-        return fetchQueries.fetchStorages(searchStorageDto, pageable)
+        return storageR2dbcRepository.findByStatusAndAccountingBetweenAndRackBetweenAndEdition(
+                searchStorageDto.getStatus().name(),
+                        searchStorageDto.getDateFrom(),
+                        searchStorageDto.getDateTo(),
+                        searchStorageDto.getRackMin(),
+                        searchStorageDto.getRackMax(),
+                        searchStorageDto.getEdition(),
+                        pageable)
                 .map(storageMapper::toModel)
                 .collectList()
                 .flatMap(storageModels -> storageR2dbcRepository.count()
@@ -57,6 +59,7 @@ public class StorageModelRepository implements StorageRepository {
                                 new PageImpl<>(storageModels, pageable, total)
                         )
                 );
+
     }
 
     @Override

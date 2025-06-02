@@ -32,10 +32,16 @@ public class EditionController {
      return editionService.create(editionMapper.toNewModel(editionDto)).map(editionMapper::toDto);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public Mono<EditionDto> findById(
             @PathVariable @NotNull UUID id) {
         return editionService.findById(id).map(editionMapper::toDto);
+    }
+
+    @GetMapping("/isbn/{isbn}")
+    public Mono<EditionDto> findByIsbn(
+            @PathVariable @NotNull String isbn) {
+        return editionService.findByIsbn(isbn).map(editionMapper::toDto);
     }
 
     @GetMapping("/fetch")

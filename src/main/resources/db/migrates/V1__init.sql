@@ -1,5 +1,6 @@
 create type book_enum as enum ('FREE', 'BORROW');
 create cast (varchar as book_enum) with inout as implicit;
+create cast (book_enum as varchar) with inout as implicit;
 
 
 create table author

@@ -23,4 +23,6 @@ public interface EditionRepository{
     Mono<Long> count();
 
     Mono<Page<EditionModel>> fetchEditions(SearchEditionDto searchEditionDto, Pageable pageable);
+
+    Mono<EditionModel> findByIsbn(String isbn);
 }

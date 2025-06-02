@@ -101,7 +101,7 @@ class EditionControllerMockTest {
         when(editionMapper.toDto(any())).thenReturn(new EditionDto(null, "", 1, LocalDate.now(), 1, UUID.randomUUID()));
 
         webTestClient.get()
-                .uri("/edition/" + validId)
+                .uri("/edition/id/" + validId)
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -111,7 +111,7 @@ class EditionControllerMockTest {
         String invalidId = "NOT-A-UUID";
 
         webTestClient.get()
-                .uri("/edition/" + invalidId)
+                .uri("/edition/id/" + invalidId)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
@@ -119,7 +119,7 @@ class EditionControllerMockTest {
     @Test
     void getEditionById_WhenBlankId_ReturnsBadRequest() {
         webTestClient.get()
-                .uri("/edition/")
+                .uri("/edition/id/")
                 .exchange()
                 .expectStatus().is4xxClientError();
     }

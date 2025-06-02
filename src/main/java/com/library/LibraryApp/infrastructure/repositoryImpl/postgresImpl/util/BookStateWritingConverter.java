@@ -7,10 +7,10 @@ import org.springframework.data.convert.WritingConverter;
 
 @WritingConverter
 @Slf4j
-public class BookStateWritingConverter implements Converter<BookState, String> {
+public class BookStateWritingConverter implements Converter<BookState, BookState> {
     @Override
-    public String convert(BookState source) {
-        return source.getValue();
+    public BookState convert(BookState source) {
+        return source;
     }
 }
 

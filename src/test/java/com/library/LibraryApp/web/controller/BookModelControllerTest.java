@@ -165,7 +165,14 @@ class BookModelControllerTest extends AbstractIntegrationTest {
           new BookEntity("book4", "621.391.83", currentAuthorDto.getId())
         );
 
-        bookR2dbcRepo.saveAll(books).subscribe();
+        StepVerifier.create(
+                        bookR2dbcRepo.deleteAll()
+                                .thenMany(bookR2dbcRepo.saveAll(books))
+                                .then()
+                )
+                .expectComplete()
+                .verify();
+
 
         webTestClient
                 .get()

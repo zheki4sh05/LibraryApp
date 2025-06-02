@@ -5,7 +5,6 @@ import com.library.LibraryApp.core.model.EditionModel;
 import com.library.LibraryApp.core.repository.BookRepository;
 import com.library.LibraryApp.core.repository.EditionRepository;
 import com.library.LibraryApp.core.service.EditionService;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
 import com.library.LibraryApp.web.exceptions.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,5 +58,11 @@ public class BookEditionService implements EditionService {
         return editionRepository.fetchEditions(searchEditionDto, pageable);
 
 
+    }
+
+    @Override
+    public Mono<EditionModel> findByIsbn(String isbn) {
+        return editionRepository.findByIsbn(isbn)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Не удалось найти выпуск по isbn: "+isbn)));
     }
 }

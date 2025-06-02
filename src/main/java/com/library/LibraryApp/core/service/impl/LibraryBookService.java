@@ -3,7 +3,6 @@ package com.library.LibraryApp.core.service.impl;
 import com.library.LibraryApp.core.model.BookModel;
 import com.library.LibraryApp.core.repository.AuthorRepository;
 import com.library.LibraryApp.core.repository.BookRepository;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
 import com.library.LibraryApp.core.service.BookService;
 import com.library.LibraryApp.application.dto.SearchBookDto;
 import com.library.LibraryApp.web.exceptions.EntityNotFoundException;

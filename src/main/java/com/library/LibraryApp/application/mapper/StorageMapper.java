@@ -1,14 +1,11 @@
 package com.library.LibraryApp.application.mapper;
 
-import com.library.LibraryApp.application.dto.CreateStorageDto;
-import com.library.LibraryApp.application.dto.StorageDto;
-import com.library.LibraryApp.application.entity.StorageEntity;
-import com.library.LibraryApp.core.model.StorageModel;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import com.library.LibraryApp.application.dto.*;
+import com.library.LibraryApp.application.entity.*;
+import com.library.LibraryApp.core.model.*;
+import org.mapstruct.*;
 
-import java.util.UUID;
+import java.util.*;
 
 @Mapper(componentModel = "spring")
 public interface StorageMapper {

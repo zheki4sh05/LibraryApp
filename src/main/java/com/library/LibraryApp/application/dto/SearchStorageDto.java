@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,17 +19,21 @@ import java.time.LocalDate;
 public class SearchStorageDto
 {
     @NotNull
-    BookState status;
-
-
-    @PastOrPresent
-    LocalDate dateFrom;
-
+    private BookState status;
 
     @PastOrPresent
-    LocalDate dateTo;
+    private LocalDate dateFrom = LocalDate.now();
+
+    @PastOrPresent
+    private LocalDate dateTo= LocalDate.now();
 
     @Min(1) @Max(100)
-    Integer rack;
+    private Integer rackMin = 1;
+
+    @Min(1) @Max(100)
+    private Integer rackMax = 100;
+
+    @NotNull
+    private UUID edition;
 
 }
