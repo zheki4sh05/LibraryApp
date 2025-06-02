@@ -4,25 +4,24 @@ import com.library.LibraryApp.application.dto.SearchBookDto;
 import com.library.LibraryApp.application.entity.*;
 import com.library.LibraryApp.application.mapper.BookMapper;
 import com.library.LibraryApp.core.model.BookModel;
-import com.library.LibraryApp.core.repository.BookRepository;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.BookR2dbcRepo;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
+import com.library.LibraryApp.core.repository.*;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.*;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class BookModelRepository implements BookRepository {
 
     private final BookR2dbcRepo bookR2dbcRepo;
     private final BookMapper bookMapper;
-    private final FetchQueries fetchQueries;
+    private final AuthorR2dbcRepo authorR2dbcRepo;
 
     @Override
     public Mono<BookModel> save(BookModel newBook) {
@@ -31,12 +30,25 @@ public class BookModelRepository implements BookRepository {
 
     @Override
     public Mono<Page<BookModel>> fetchBooks(SearchBookDto searchBookDto, Pageable pageable) {
-        return fetchQueries.fetchBooks(searchBookDto, pageable)
-                .map(bookMapper::toModel)
+
+        return authorR2dbcRepo.findAllByNameContaining(searchBookDto.getAuthor())
+                .map(ProjectionId::getId)
                 .collectList()
-                .flatMap(bookModels -> bookR2dbcRepo.count()
-                        .map(total->new PageImpl<>(bookModels, pageable, total))
-                );
+                .flatMap(authorIds -> {
+                    Mono<List<BookModel>> booksMono = bookR2dbcRepo
+                            .findByNameContainingAndUdkContainingAndAuthorIn(
+                                    searchBookDto.getName(),
+                                    searchBookDto.getUdk(),
+                                    authorIds,
+                                    pageable
+                            )
+                            .map(bookMapper::toModel)
+                            .collectList();
+                    Mono<Long> countMono = bookR2dbcRepo.count();
+                    return Mono.zip(booksMono, countMono)
+                            .map(tuple -> new PageImpl<>(tuple.getT1(), pageable, tuple.getT2()));
+                });
+
     }
 
     @Override

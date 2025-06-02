@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
+import java.util.*;
 
 public interface EditionService {
     @Transactional
@@ -25,4 +25,7 @@ public interface EditionService {
 
     @Transactional(readOnly = true)
     Mono<Page<EditionModel>> fetch(SearchEditionDto searchEditionDto, Pageable pageable);
+
+    @Transactional(readOnly = true)
+    Mono<EditionModel> findByIsbn(String isbn);
 }

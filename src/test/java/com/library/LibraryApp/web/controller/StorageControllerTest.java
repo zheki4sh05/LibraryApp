@@ -76,11 +76,12 @@ class StorageControllerTest extends AbstractIntegrationTest {
                         uriBuilder.path(STORAGE_URI)
                                 .queryParam("status", BookState.FREE)
                                 .queryParam("dateFrom", "1970-01-01")
+                                .queryParam("edition",  edition.id())
                                 .queryParam("dateTo", LocalDate.now().toString())
                                 .queryParam("rack", 5)
                                 .queryParam("page", 0)
                                 .queryParam("size", 10)
-                                .queryParam("sort", "name,asc")
+                                .queryParam("sort", "accounting,asc")
                                 .build()
 
                 )
@@ -107,7 +108,13 @@ class StorageControllerTest extends AbstractIntegrationTest {
                 new StorageEntity(null, 5, LocalDate.of(2022, 11, 30), BookState.BORROW, edition.id())
         );
 
-        storageRepository.saveAll(storages).subscribe();
+        StepVerifier.create(
+                        storageRepository.deleteAll()
+                                .thenMany(storageRepository.saveAll(storages))
+                                .then()
+                )
+                .expectComplete()
+                .verify();
 
         webTestClient
                 .get()
@@ -116,7 +123,7 @@ class StorageControllerTest extends AbstractIntegrationTest {
                                 .queryParam("edition", edition.id())
                                 .queryParam("page", 0)
                                 .queryParam("size", 10)
-                                .queryParam("sort", "name,asc")
+                                .queryParam("sort", "accounting,asc")
                                 .build()
 
                 )
@@ -130,9 +137,6 @@ class StorageControllerTest extends AbstractIntegrationTest {
                 .jsonPath("$.size").isEqualTo(10)
                 .jsonPath("$.number").isEqualTo(0)
                 .jsonPath("$.totalPages").isNumber();
-
-
-
     }
 
 

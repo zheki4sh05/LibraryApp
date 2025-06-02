@@ -1,19 +1,16 @@
 package com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.model;
 
-import com.library.LibraryApp.application.dto.SearchEditionDto;
-import com.library.LibraryApp.application.mapper.EditionMapper;
-import com.library.LibraryApp.core.model.EditionModel;
-import com.library.LibraryApp.core.repository.EditionRepository;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.EditionR2dbcRepository;
-import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.util.FetchQueries;
-import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
+import com.library.LibraryApp.application.dto.*;
+import com.library.LibraryApp.application.mapper.*;
+import com.library.LibraryApp.core.model.*;
+import com.library.LibraryApp.core.repository.*;
+import com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc.*;
+import lombok.*;
+import org.springframework.data.domain.*;
+import org.springframework.stereotype.*;
+import reactor.core.publisher.*;
 
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
@@ -21,7 +18,6 @@ public class EditionModelRepository implements EditionRepository {
 
     private final EditionR2dbcRepository editionR2dbcRepository;
     private final EditionMapper editionMapper;
-    private final FetchQueries fetchQueries;
 
     @Override
     public Mono<EditionModel> save(EditionModel edition) {
@@ -45,12 +41,26 @@ public class EditionModelRepository implements EditionRepository {
 
     @Override
     public Mono<Page<EditionModel>> fetchEditions(SearchEditionDto searchEditionDto, Pageable pageable) {
-
-        return fetchQueries.fetchEdition(searchEditionDto, pageable)
+      return  editionR2dbcRepository.findByPagesBetweenAndPublicationBetweenAndNumberBetweenAndBook(
+                        searchEditionDto.getPagesMin(),
+                       searchEditionDto.getPagesMax(),
+                        searchEditionDto.getPublicationFrom(),
+                        searchEditionDto.getPublicationTo(),
+                        searchEditionDto.getMinNumber(),
+                        searchEditionDto.getMaxNumber(),
+                        searchEditionDto.getBook(),
+                        pageable
+                )
                 .map(editionMapper::toModel)
                 .collectList()
-                .flatMap(editionModels -> editionR2dbcRepository.count()
-                        .map(total->new PageImpl<>(editionModels, pageable, total))
+                .flatMap(authorModels -> editionR2dbcRepository.count()
+                        .map(total->new PageImpl<>(authorModels, pageable, total))
                 );
     }
+
+    @Override
+    public Mono<EditionModel> findByIsbn(String isbn) {
+        return editionR2dbcRepository.findByIsbn(isbn);
+    }
+
 }

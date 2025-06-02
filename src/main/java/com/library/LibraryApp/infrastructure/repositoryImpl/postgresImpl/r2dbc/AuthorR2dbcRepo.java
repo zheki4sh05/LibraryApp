@@ -1,6 +1,6 @@
 package com.library.LibraryApp.infrastructure.repositoryImpl.postgresImpl.r2dbc;
 
-import com.library.LibraryApp.application.entity.AuthorEntity;
+import com.library.LibraryApp.application.entity.*;
 import com.library.LibraryApp.core.model.AuthorModel;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
@@ -20,9 +20,7 @@ import java.util.UUID;
 @Repository
 public interface AuthorR2dbcRepo extends ReactiveCrudRepository<AuthorEntity, UUID>, R2dbcRepository<AuthorEntity, UUID> {
 
-//    @Query("""
-//            select a.* from author as a
-//            where (:name = '' or a.name like :name)
-//            """)
-    Flux<AuthorEntity> findByNameContainingOrIsEmpty(@Param("name") String name, Pageable pageable);
+    Flux<AuthorEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    Flux<ProjectionId> findAllByNameContaining(String author);
 }

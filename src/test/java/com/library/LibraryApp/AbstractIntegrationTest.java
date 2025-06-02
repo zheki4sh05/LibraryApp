@@ -82,6 +82,7 @@ public class AbstractIntegrationTest {
     }
 
     public AuthorDto createAuthor(){
+         authorR2DbcRepo.deleteAll().subscribe();
         AuthorDto authorDto = AuthorDto.builder()
                 .name("author2")
                 .build();

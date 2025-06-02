@@ -66,7 +66,7 @@ class EditionControllerTest extends AbstractIntegrationTest {
         var edition = createEdition();
       webTestClient
                 .get()
-                .uri(EDITION_URI+"/"+edition.id())
+                .uri(EDITION_URI+"/id/"+edition.id())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(EditionDto.class)
@@ -81,7 +81,7 @@ class EditionControllerTest extends AbstractIntegrationTest {
     public void not_found_by_id_404(){
         webTestClient
                 .get()
-                .uri(EDITION_URI+"/"+ UUID.randomUUID().toString())
+                .uri(EDITION_URI+"/id/"+ UUID.randomUUID().toString())
                 .exchange()
                 .expectStatus().isEqualTo(404)
                 .expectBody(String.class)
@@ -105,11 +105,13 @@ class EditionControllerTest extends AbstractIntegrationTest {
                 .get()
                 .uri(uriBuilder ->
                         uriBuilder.path(EDITION_URI+"/fetch")
-                                .queryParam("number", 1)
-                                .queryParam("publication", "2019-06-10")
+                                .queryParam("numberMin", 1)
+                                .queryParam("publicationFrom", "2019-06-10")
+                                .queryParam("publicationTo", "2019-06-10")
+                                .queryParam("book", book.id())
                                 .queryParam("page", 0)
                                 .queryParam("size", 10)
-                                .queryParam("sort", "name,asc")
+                                .queryParam("sort", "publication,asc")
                                 .build()
 
                 )
@@ -198,6 +200,24 @@ class EditionControllerTest extends AbstractIntegrationTest {
                 .expectStatus().isOk()
                 .expectBody(UUID.class);
     }
+
+    @Test
+    public void find_by_isbn_200(){
+      var edition = createEdition();
+
+        webTestClient
+                .get()
+                .uri(EDITION_URI+"/isbn/"+edition.isbn())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(EditionDto.class)
+                .consumeWith(editionDtoEntityExchangeResult -> {
+                    var body = editionDtoEntityExchangeResult.getResponseBody();
+                    assertNotNull(body);
+                    assertEquals(body.id(), edition.id());
+                });
+    }
+
 
 
 }

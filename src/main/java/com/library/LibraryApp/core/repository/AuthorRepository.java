@@ -14,7 +14,6 @@ public interface AuthorRepository {
 
     Mono<AuthorModel> save(AuthorModel newAuthor);
 
-    Mono<Long> count();
 
     Mono<AuthorModel> findById(UUID id);
 

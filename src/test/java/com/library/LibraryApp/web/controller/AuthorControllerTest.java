@@ -8,7 +8,9 @@ import com.library.LibraryApp.application.entity.BookEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
+import reactor.core.publisher.*;
 import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
@@ -168,33 +170,34 @@ class AuthorControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void update_not_existed_author_404(){
-        var result1 = authorR2DbcRepo.count();
+    public void update_not_existed_author_404() {
 
-        StepVerifier.create(result1)
-                .assertNext(count->assertEquals(0, count))
-                .verifyComplete();
+        Mono<Long> initialCount = authorR2DbcRepo.count().cache();
 
         AuthorDto currentAuthorDto = AuthorDto.builder()
                 .id(UUID.randomUUID())
                 .name("author")
                 .build();
+
+
         webTestClient
                 .put()
-                .uri(AUTHOR_URI+"/"+currentAuthorDto.getId())
+                .uri(AUTHOR_URI + "/" + currentAuthorDto.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(currentAuthorDto)
                 .exchange()
-                .expectStatus().isEqualTo(404)
+                .expectStatus().isNotFound() // 404
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(String.class);
 
 
-        var result2 = authorR2DbcRepo.count();
-
-        StepVerifier.create(result2)
-                .assertNext(count->assertEquals(0, count))
+        StepVerifier.create(initialCount.zipWith(authorR2DbcRepo.count()))
+                .assertNext(tuple -> {
+                    Long beforeCount = tuple.getT1();
+                    Long afterCount = tuple.getT2();
+                    assertEquals(beforeCount, afterCount);
+                })
                 .verifyComplete();
     }
 
@@ -330,7 +333,13 @@ class AuthorControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void fetch_authors_by_params_200(){
-        authorR2DbcRepo.saveAll(getAuthorEntities()).subscribe();
+        StepVerifier.create(
+                        authorR2DbcRepo.deleteAll()
+                                .thenMany(authorR2DbcRepo.saveAll(getAuthorEntities()))
+                                .then()
+                )
+                .expectComplete()
+                .verify();
         webTestClient
                 .get()
                 .uri(uriBuilder ->
@@ -353,10 +362,17 @@ class AuthorControllerTest extends AbstractIntegrationTest {
                 .jsonPath("$.totalPages").isNumber();
     }
 
+
     @Test
     public void fetch_authors_empty_name_params_200(){
-        authorR2DbcRepo.saveAll(getAuthorEntities()).subscribe();
 
+        StepVerifier.create(
+                        authorR2DbcRepo.deleteAll()
+                                .thenMany(authorR2DbcRepo.saveAll(getAuthorEntities()))
+                                .then()
+                )
+                .expectComplete()
+                .verify();
         webTestClient
                 .get()
                 .uri(uriBuilder ->
@@ -383,8 +399,13 @@ class AuthorControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void fetch_authors_check_page_with_params_200(){
-        authorR2DbcRepo.saveAll(getAuthorEntities()).subscribe();
-
+        StepVerifier.create(
+                        authorR2DbcRepo.deleteAll()
+                                .thenMany(authorR2DbcRepo.saveAll(getAuthorEntities()))
+                                .then()
+                )
+                .expectComplete()
+                .verify();
         webTestClient
                 .get()
                 .uri(uriBuilder ->
@@ -413,7 +434,7 @@ class AuthorControllerTest extends AbstractIntegrationTest {
                     new AuthorEntity(null, "author2"),
                     new AuthorEntity(null, "author3"),
                     new AuthorEntity(null, "author4"),
-                    new AuthorEntity(null, "5author5"),
+                    new AuthorEntity(null, "author5"),
                     new AuthorEntity(null, "123456"),
                     new AuthorEntity(null, "автор"),
                     new AuthorEntity(null, "имяавтора")

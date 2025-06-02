@@ -1,5 +1,6 @@
 package com.library.LibraryApp.application.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,7 +9,10 @@ import lombok.*;
 @Setter
 public class SearchBookDto
  {
+
     private  String udk="";
+
      private String name="";
+
      private  String author="";
 }
